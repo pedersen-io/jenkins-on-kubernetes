@@ -94,7 +94,7 @@ jenkins:
       - containers:
         - alwaysPullImage: true
           args: "^${computer.jnlpmac} ^${computer.name}"
-          image: "us.gcr.io/sleipnir/build-golang:latest"
+          image: "derekpedersen/build-golang:latest"
           livenessProbe:
             failureThreshold: 0
             initialDelaySeconds: 0
@@ -127,7 +127,7 @@ jenkins:
       - containers:
         - alwaysPullImage: true
           args: "^${computer.jnlpmac} ^${computer.name}"
-          image: "us.gcr.io/sleipnir/build-node:latest"
+          image: "derekpedersen/build-node:latest"
           livenessProbe:
             failureThreshold: 0
             initialDelaySeconds: 0
@@ -155,7 +155,7 @@ jenkins:
       - containers:
         - alwaysPullImage: true
           args: "^${computer.jnlpmac} ^${computer.name}"
-          image: "us.gcr.io/sleipnir/build-jenkins-base:latest"
+          image: "derekpedersen/build-jenkins-base:latest"
           livenessProbe:
             failureThreshold: 0
             initialDelaySeconds: 0
@@ -203,7 +203,7 @@ jenkins:
       - containers:
         - alwaysPullImage: true
           args: "^${computer.jnlpmac} ^${computer.name}"
-          image: "us.gcr.io/sleipnir/build-dotnetcore:latest"
+          image: "derekpedersen/build-dotnetcore:latest"
           livenessProbe:
             failureThreshold: 0
             initialDelaySeconds: 0
