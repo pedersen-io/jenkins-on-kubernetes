@@ -2,7 +2,7 @@ FROM jenkins/jnlp-slave
 
 USER root
 
-# apt-get update, build essentials, gcloud, kubectl
+# apt-get update, build essentials, kubectl
 RUN apt-get update -qq && \
     apt-get install -qqy apt-transport-https ca-certificates curl gnupg2 software-properties-common build-essential jq libapparmor-dev libseccomp-dev && \
     apt-get update -y && \
