@@ -51,7 +51,7 @@ kubectl -n jenkins create configmap jenkins-casc --from-file=casc.yaml
 ```bash
 helm repo add jenkins https://charts.jenkins.io
 helm repo update
-helm install jenkins jenkins/jenkins -n jenkins -f values.yaml
+helm upgrade --install jenkins jenkins/jenkins -n jenkins -f values.yaml
 ```
 
 6. Retrieve the generated Jenkins admin password:
