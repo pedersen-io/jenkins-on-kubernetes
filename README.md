@@ -37,10 +37,13 @@ kubectl -n jenkins create secret docker-registry regcred \
 
 4. Provide Jenkins Configuration as Code (CasC):
 - Option A: Keep using the raw GitHub URL in `casCGlobalConfig.configurationPath` (ensure accessibility).
-- Option B: Create a ConfigMap and mount your own CasC YAML into the Jenkins controller.
+- Option B: Create a ConfigMap from your own CasC YAML and mount it into the Jenkins controller.
+- Option C: Use the sample Kubernetes agent pod template definitions from `containers_config.yaml` as a starting point for Jenkins agents.
+
+Create the local CasC file first, for example `casc.yaml`:
 
 ```bash
-kubectl -n jenkins create configmap jenkins-casc --from-file=jenkins-casc.yaml
+kubectl -n jenkins create configmap jenkins-casc --from-file=casc.yaml
 ```
 
 5. Install Jenkins with Helm (example):
@@ -48,10 +51,16 @@ kubectl -n jenkins create configmap jenkins-casc --from-file=jenkins-casc.yaml
 ```bash
 helm repo add jenkins https://charts.jenkins.io
 helm repo update
-helm install jenkins jenkins/jenkins -n jenkins -f jenkins-values.yaml
+helm install jenkins jenkins/jenkins -n jenkins -f values.yaml
 ```
 
-6. Ensure the Jenkins Kubernetes cloud and pod templates (in your CasC YAML and `ContainersConfig.yaml`) reference the Docker Hub image names and, if necessary, reference the `regcred` imagePullSecret.
+6. Retrieve the generated Jenkins admin password:
+
+```bash
+kubectl -n jenkins get secret jenkins -o jsonpath='{.data.jenkins-admin-password}' | base64 --decode
+```
+
+6. Ensure the Jenkins Kubernetes cloud and pod templates in your CasC YAML and `containers_config.yaml` reference the Docker Hub image names and, if necessary, reference the `regcred` imagePullSecret.
 
 7. Build strategy:
 - Current repo uses host `docker.sock` mounts in pod templates. This may work if your DOKS node image runs Docker and hostPath mounts are allowed. Mounting the host socket grants privileged access to the node — consider security implications.
@@ -61,5 +70,3 @@ helm install jenkins jenkins/jenkins -n jenkins -f jenkins-values.yaml
 
 Verification:
 - Trigger a Jenkins pipeline that builds and pushes an image; confirm the image appears in Docker Hub and agents connect successfully.
-
-If you want, I can add an example `values.yaml` for Helm that mounts a CasC ConfigMap and a sample Kaniko pipeline stage.
