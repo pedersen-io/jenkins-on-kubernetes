@@ -2,14 +2,11 @@ FROM jenkins/jnlp-slave
 
 USER root
 
-# apt-get update, build essentials, gcloud, kubectl
+# apt-get update, build essentials, kubectl
 RUN apt-get update -qq && \
     apt-get install -qqy apt-transport-https ca-certificates curl gnupg2 software-properties-common build-essential jq libapparmor-dev libseccomp-dev && \
-    echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && \
-    curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg  add - && \
     apt-get update -y && \
-    apt-get install google-cloud-sdk -y && \
-    apt-get install kubectl -y
+    apt-get install -y kubectl
 
 # docker
 RUN curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add - && \

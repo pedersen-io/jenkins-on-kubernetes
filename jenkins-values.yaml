@@ -1,0 +1,24 @@
+controller:
+  serviceType: LoadBalancer
+  ingress:
+    enabled: true
+    hostName: jenkins.pedersen.io
+  env:
+    - name: CASC_JENKINS_CONFIG
+      value: /var/jenkins_config/jenkins-casc.yaml
+  additionalVolumes:
+    - name: jenkins-casc-volume
+      configMap:
+        name: jenkins-casc
+        items:
+          - key: jenkins-casc.yaml
+            path: jenkins-casc.yaml
+  additionalVolumeMounts:
+    - name: jenkins-casc-volume
+      mountPath: /var/jenkins_config
+      readOnly: true
+  imagePullSecrets:
+    - name: regcred
+persistence:
+  enabled: true
+  size: 8Gi
