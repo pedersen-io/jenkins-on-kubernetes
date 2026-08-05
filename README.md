@@ -1,41 +1,65 @@
-# GKE Jenkins #
+# Jenkins on DigitalOcean Kubernetes (DOKS)
 
-This is my `gke jenkins` setup
+This repository contains Jenkins controller and agent configuration for running Jenkins in-cluster on DigitalOcean Kubernetes (DOKS).
 
-## helm charts ##
+## Deploying Jenkins to DigitalOcean Kubernetes (DOKS)
 
-Add the repo `helm repo add stable https://kubernetes-charts.storage.googleapis.com/`
+This project publishes build images to Docker Hub and avoids provider-specific tooling in the controller images. The sections below outline high-level steps to deploy Jenkins in-cluster on DOKS and get CI building and pushing images.
 
-Install the chart`helm install stable/jenkins --generate-name`
+Prerequisites:
+- `doctl`, `kubectl`, and `helm` installed and authenticated
+- A DOKS cluster created and kubeconfig available
+- Docker Hub credentials for pushing/pulling images
 
-```yaml
-NAME: jenkins-1578171870
-LAST DEPLOYED: Sat Jan  4 13:04:32 2020
-NAMESPACE: default
-STATUS: deployed
-REVISION: 1
-NOTES:
-1. Get your 'admin' user password by running:
-  printf $(kubectl get secret --namespace default jenkins-1578171870 -o jsonpath="{.data.jenkins-admin-password}" | base64 --decode);echo
-2. Get the Jenkins URL to visit by running these commands in the same shell:
-  export POD_NAME=$(kubectl get pods --namespace default -l "app.kubernetes.io/component=jenkins-master" -l "app.kubernetes.io/instance=jenkins-1594685437" -o jsonpath="{.items[0].metadata.name}")
-  echo http://127.0.0.1:8080
-  kubectl --namespace default port-forward $POD_NAME 8080:8080
+Quick steps:
 
-3. Login with the password from step 1 and the username: admin
+1. Provision a DOKS cluster (example):
 
-
-For more information on running Jenkins on Kubernetes, visit:
-https://cloud.google.com/solutions/jenkins-on-container-engine
+```bash
+doctl kubernetes cluster create my-doks-cluster --region nyc1 --node-pool "name=default;size=s-2vcpu-4gb;count=3"
+doctl kubernetes cluster kubeconfig save my-doks-cluster
 ```
 
-### permissions ###
+2. Create `jenkins` namespace:
 
-I ran into some issue with the pods not being able to run `helm` commands, so I had to create the following `clusterrolebinding`
-
+```bash
+kubectl create namespace jenkins
 ```
-kubectl create clusterrolebinding permissive-binding --clusterrole=cluster-admin --user=admin --user=kubelet --group=system:serviceaccounts
-```
-### upgrade jenkins ###
 
-To upgrade the version of `jenkins` run this command `helm upgrade [RELEASE_NAME] jenkins/jenkins [flags]`
+3. Create Docker Hub secret (used for image pulls/pushes):
+
+```bash
+kubectl -n jenkins create secret docker-registry regcred \
+  --docker-username=<DOCKER_USER> \
+  --docker-password=<DOCKER_PASS> \
+  --docker-email=<EMAIL>
+```
+
+4. Provide Jenkins Configuration as Code (CasC):
+- Option A: Keep using the raw GitHub URL in `casCGlobalConfig.configurationPath` (ensure accessibility).
+- Option B: Create a ConfigMap and mount your own CasC YAML into the Jenkins controller.
+
+```bash
+kubectl -n jenkins create configmap jenkins-casc --from-file=jenkins-casc.yaml
+```
+
+5. Install Jenkins with Helm (example):
+
+```bash
+helm repo add jenkins https://charts.jenkins.io
+helm repo update
+helm install jenkins jenkins/jenkins -n jenkins -f jenkins-values.yaml
+```
+
+6. Ensure the Jenkins Kubernetes cloud and pod templates (in your CasC YAML and `ContainersConfig.yaml`) reference the Docker Hub image names and, if necessary, reference the `regcred` imagePullSecret.
+
+7. Build strategy:
+- Current repo uses host `docker.sock` mounts in pod templates. This may work if your DOKS node image runs Docker and hostPath mounts are allowed. Mounting the host socket grants privileged access to the node — consider security implications.
+- Recommended alternative: use Kaniko or BuildKit for in-cluster builds (no host docker). If you need, add a Kaniko executor stage in `Jenkinsfile` and an image-pull secret.
+
+8. Cleanup old cloud provider credentials: Remove legacy provider-specific credential entries from any CasC YAML if they are no longer needed.
+
+Verification:
+- Trigger a Jenkins pipeline that builds and pushes an image; confirm the image appears in Docker Hub and agents connect successfully.
+
+If you want, I can add an example `values.yaml` for Helm that mounts a CasC ConfigMap and a sample Kaniko pipeline stage.

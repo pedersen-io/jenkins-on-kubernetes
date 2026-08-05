@@ -20,9 +20,7 @@ pipeline {
                     withDockerRegistry([credentialsId: 'derekpedersen_docker', url: "https://index.docker.io/v1/"]) {
                         sh 'make publish-docker'
                     }
-                    withCredentials([[$class: 'StringBinding', credentialsId: 'GCLOUD_PROJECT_ID', variable: 'GCLOUD_PROJECT_ID']]) {
-                        sh 'make publish-gcloud'
-                    }
+                    // GCR publish removed for Docker Hub migration
                 }
             }
         }
@@ -33,9 +31,7 @@ pipeline {
                     withDockerRegistry([credentialsId: 'derekpedersen_docker', url: "https://index.docker.io/v1/"]) {
                         sh 'make publish-docker'
                     }
-                    withCredentials([[$class: 'StringBinding', credentialsId: 'GCLOUD_PROJECT_ID', variable: 'GCLOUD_PROJECT_ID']]) {
-                        sh 'make publish-gcloud'
-                    }
+                    // GCR publish removed for Docker Hub migration
                 }
             }
         }
@@ -46,9 +42,7 @@ pipeline {
                     withDockerRegistry([credentialsId: 'derekpedersen_docker', url: "https://index.docker.io/v1/"]) {
                         sh 'make publish-docker'
                     }
-                    withCredentials([[$class: 'StringBinding', credentialsId: 'GCLOUD_PROJECT_ID', variable: 'GCLOUD_PROJECT_ID']]) {
-                        sh 'make publish-gcloud'
-                    }
+                    // GCR publish removed for Docker Hub migration
                 }
             }
         }
@@ -59,9 +53,7 @@ pipeline {
                     withDockerRegistry([credentialsId: 'derekpedersen_docker', url: "https://index.docker.io/v1/"]) {
                         sh 'make publish-docker'
                     }
-                    withCredentials([[$class: 'StringBinding', credentialsId: 'GCLOUD_PROJECT_ID', variable: 'GCLOUD_PROJECT_ID']]) {
-                        sh 'make publish-gcloud'
-                    }
+                    // GCR publish removed for Docker Hub migration
                 }
             }
         }
