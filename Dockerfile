@@ -1,4 +1,4 @@
-FROM jenkins/jnlp-slave
+FROM jenkins/inbound-agent:latest
 
 USER root
 
@@ -22,4 +22,4 @@ RUN curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master
     chmod 700 get_helm.sh && \
     ./get_helm.sh
 
-ENTRYPOINT ["jenkins-slave"]
+ENTRYPOINT ["jenkins-agent"]

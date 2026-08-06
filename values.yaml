@@ -17,6 +17,16 @@ controller:
     annotations:
       kubernetes.io/ingress.class: nginx
       cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    hostName: jenkins.pedersen.io
+    path: /
+    pathType: ImplementationSpecific
+    tls:
+      - secretName: jenkins-pedersen-io-tls
+        hosts:
+          - jenkins.pedersen.io
+
+  JCasC:
+    configScripts:
       casc-managed.yaml: |-
         jenkins:
           clouds:
@@ -129,27 +139,6 @@ controller:
                     hostPath: "/var/run/docker.sock"
                     mountPath: "/var/run/docker.sock"
                 yamlMergeStrategy: "override"
-                  workingDir: "/home/jenkins"
-                id: "6170664b-ab08-46ae-a41d-a2721b714a12"
-                idleMinutes: 15
-                idleMinutesStr: "15"
-                instanceCap: 5
-                instanceCapStr: "5"
-                label: "build-dotnetcore-stable"
-                name: "dotnetcore"
-                podRetention: "onFailure"
-                slaveConnectTimeout: 600
-                slaveConnectTimeoutStr: "600"
-                volumes:
-                - hostPathVolume:
-                    hostPath: "/var/run/docker.sock"
-                    mountPath: "/var/run/docker.sock"
-                yamlMergeStrategy: "override"
-
-        unclassified:
-          location:
-            adminAddress: "admin@example.com"
-            url: "https://jenkins.pedersen.io/"
 
   imagePullSecrets:
     - name: regcred

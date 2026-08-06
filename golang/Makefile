@@ -1,8 +1,11 @@
-export GIT_COMMIT_SHA = $(shell git rev-parse HEAD)
+GIT_COMMIT_SHA ?= $(shell git rev-parse HEAD)
+IMAGE_NAME = derekpedersen/build-golang
 
 build:
-	docker build ./ -t build-golang
+	docker build ./ \
+		-t $(IMAGE_NAME):latest \
+		-t $(IMAGE_NAME):$(GIT_COMMIT_SHA)
 
-publish-docker:
-	docker tag build-golang derekpedersen/build-golang:latest
-	docker push derekpedersen/build-golang:latest
+publish-docker: build
+	docker push $(IMAGE_NAME):latest
+	docker push $(IMAGE_NAME):$(GIT_COMMIT_SHA)
