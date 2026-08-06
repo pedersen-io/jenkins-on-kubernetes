@@ -20,7 +20,8 @@ build-agents: build
 		$(MAKE) -C $$dir build GIT_COMMIT_SHA=$(GIT_COMMIT_SHA); \
 	done
 
-publish-agents: publish-docker
+
+publish-agents: publish-docker build-agents
 	@for dir in $(AGENT_DIRS); do \
 		$(MAKE) -C $$dir publish-docker GIT_COMMIT_SHA=$(GIT_COMMIT_SHA); \
 	done
