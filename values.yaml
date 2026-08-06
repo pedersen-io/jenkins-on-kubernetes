@@ -1,6 +1,7 @@
 controller:
   serviceType: LoadBalancer
-  
+  agentListenerEnabled: false
+
   installPlugins:
     - kubernetes
     - workflow-aggregator
@@ -33,6 +34,7 @@ controller:
           - kubernetes:
               name: "kubernetes"
               namespace: "jenkins"
+              webSocket: true
               templates:
               - containers:
                 - alwaysPullImage: true
@@ -64,6 +66,7 @@ controller:
                     hostPath: "/var/run/docker.sock"
                     mountPath: "/var/run/docker.sock"
                 yamlMergeStrategy: "override"
+
               - containers:
                 - alwaysPullImage: true
                   args: "^${computer.jnlpmac} ^${computer.name}"
@@ -89,6 +92,7 @@ controller:
                     hostPath: "/var/run/docker.sock"
                     mountPath: "/var/run/docker.sock"
                 yamlMergeStrategy: "override"
+
               - containers:
                 - alwaysPullImage: true
                   args: "^${computer.jnlpmac} ^${computer.name}"
@@ -114,6 +118,7 @@ controller:
                     hostPath: "/var/run/docker.sock"
                     mountPath: "/var/run/docker.sock"
                 yamlMergeStrategy: "override"
+
               - containers:
                 - alwaysPullImage: true
                   args: "^${computer.jnlpmac} ^${computer.name}"
