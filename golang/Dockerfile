@@ -15,7 +15,7 @@ RUN mkdir -p /home/jenkins/go/bin && \
     mkdir -p /home/jenkins/go/src && \
     mkdir -p /home/jenkins/go/pkg && \
     curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh && \
-    go install golang.org/x/tools/go/packages@latest && \
+    go install golang.org/x/tools/gopls@latest && \
     go install github.com/golang/mock/mockgen@latest && \
     download_url=$(curl -s https://api.github.com/repos/go-swagger/go-swagger/releases/latest | jq -r '.assets[] | select(.name | contains("'"$(uname | tr '[:upper:]' '[:lower:]')"'"_amd64)) | .browser_download_url') && \
     curl -o /usr/local/bin/swagger -L "$download_url" && \
