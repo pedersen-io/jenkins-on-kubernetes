@@ -8,7 +8,8 @@ AGENT_DIRS = dotnetcore golang node
 build:
 	docker build ./ \
 		-t $(BASE_IMAGE_LATEST) \
-		-t $(BASE_IMAGE_SHA)
+		-t $(BASE_IMAGE_SHA) \
+		-t build-jenkins-base:latest
 
 publish-docker: build
 	docker push $(BASE_IMAGE_LATEST)

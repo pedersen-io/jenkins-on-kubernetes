@@ -3,8 +3,8 @@ FROM build-jenkins-base
 USER root
 
 # go
-RUN GO_VERSION=$(curl -sSL https://go.dev/VERSION?m=text) && \
-    curl --output /tmp/${GO_VERSION}.linux-amd64.tar.gz https://dl.google.com/go/${GO_VERSION}.linux-amd64.tar.gz && \
+RUN GO_VERSION=$(curl -fsSL "https://go.dev/VERSION?m=text") && \
+    curl -fsSL --output /tmp/${GO_VERSION}.linux-amd64.tar.gz "https://dl.google.com/go/${GO_VERSION}.linux-amd64.tar.gz" && \
     rm -rf /usr/local/go && \
     tar -C /usr/local -xzf /tmp/${GO_VERSION}.linux-amd64.tar.gz && \
     rm /tmp/${GO_VERSION}.linux-amd64.tar.gz
