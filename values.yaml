@@ -17,29 +17,8 @@ controller:
     annotations:
       kubernetes.io/ingress.class: nginx
       cert-manager.io/cluster-issuer: "letsencrypt-prod"
-
-    hostName: jenkins.pedersen.io
-    path: /
-    pathType: ImplementationSpecific
-
-    tls:
-      - secretName: jenkins-pedersen-io-tls
-        hosts:
-          - jenkins.pedersen.io
-
-  env:
-    - name: CASC_JENKINS_CONFIG
-      value: /var/jenkins_home/jenkins-casc.yaml
-
-  JCasC:
-    configScripts:
-      jenkins-casc.yaml: |-
+      casc-managed.yaml: |-
         jenkins:
-          systemMessage: "Jenkins managed by CasC"
-          numExecutors: 0
-          mode: NORMAL
-          scmCheckoutRetryCount: 2
-
           clouds:
           - kubernetes:
               name: "kubernetes"
@@ -48,7 +27,7 @@ controller:
               - containers:
                 - alwaysPullImage: true
                   args: "^${computer.jnlpmac} ^${computer.name}"
-                  image: "derekpedersen/build-golang:latest"
+                  image: "us.gcr.io/sleipnir/build-golang:latest"
                   livenessProbe:
                     failureThreshold: 0
                     initialDelaySeconds: 0
@@ -63,16 +42,13 @@ controller:
                   workingDir: "/home/jenkins"
                 id: "e4a18b6c-8e74-498c-adad-53d145c92728"
                 idleMinutes: 15
-                idleMinutesStr: "15"
                 instanceCap: 5
-                instanceCapStr: "5"
                 label: "build-golang-stable"
                 name: "golang"
                 nodeUsageMode: "NORMAL"
                 podRetention: "onFailure"
                 serviceAccount: "default"
                 slaveConnectTimeout: 600
-                slaveConnectTimeoutStr: "600"
                 volumes:
                 - hostPathVolume:
                     hostPath: "/var/run/docker.sock"
@@ -81,7 +57,7 @@ controller:
               - containers:
                 - alwaysPullImage: true
                   args: "^${computer.jnlpmac} ^${computer.name}"
-                  image: "derekpedersen/build-node:latest"
+                  image: "us.gcr.io/sleipnir/build-node:latest"
                   livenessProbe:
                     failureThreshold: 0
                     initialDelaySeconds: 0
@@ -93,14 +69,11 @@ controller:
                   workingDir: "/home/jenkins"
                 id: "6170664b-ab08-46ae-a41d-a2721b714a12"
                 idleMinutes: 15
-                idleMinutesStr: "15"
                 instanceCap: 5
-                instanceCapStr: "5"
                 label: "build-node-stable"
                 name: "node"
                 podRetention: "onFailure"
                 slaveConnectTimeout: 600
-                slaveConnectTimeoutStr: "600"
                 volumes:
                 - hostPathVolume:
                     hostPath: "/var/run/docker.sock"
@@ -109,7 +82,7 @@ controller:
               - containers:
                 - alwaysPullImage: true
                   args: "^${computer.jnlpmac} ^${computer.name}"
-                  image: "derekpedersen/build-jenkins-base:latest"
+                  image: "us.gcr.io/sleipnir/build-jenkins-base:latest"
                   livenessProbe:
                     failureThreshold: 0
                     initialDelaySeconds: 0
@@ -121,14 +94,11 @@ controller:
                   workingDir: "/home/jenkins/agent"
                 id: "02b8986f-3c2b-46a9-9b2a-00ba2e83cc4e"
                 idleMinutes: 15
-                idleMinutesStr: "15"
                 instanceCap: 5
-                instanceCapStr: "5"
                 label: "build-base-stable"
                 name: "jenkins"
                 podRetention: "onFailure"
                 slaveConnectTimeout: 600
-                slaveConnectTimeoutStr: "600"
                 volumes:
                 - hostPathVolume:
                     hostPath: "/var/run/docker.sock"
@@ -137,7 +107,7 @@ controller:
               - containers:
                 - alwaysPullImage: true
                   args: "^${computer.jnlpmac} ^${computer.name}"
-                  image: "derekpedersen/build-dotnetcore:latest"
+                  image: "us.gcr.io/sleipnir/build-dotnetcore:latest"
                   livenessProbe:
                     failureThreshold: 0
                     initialDelaySeconds: 0
@@ -146,6 +116,19 @@ controller:
                     timeoutSeconds: 0
                   name: "jnlp"
                   ttyEnabled: true
+                  workingDir: "/home/jenkins"
+                id: "6170664b-ab08-46ae-a41d-a2721b714a12"
+                idleMinutes: 15
+                instanceCap: 5
+                label: "build-dotnetcore-stable"
+                name: "dotnetcore"
+                podRetention: "onFailure"
+                slaveConnectTimeout: 600
+                volumes:
+                - hostPathVolume:
+                    hostPath: "/var/run/docker.sock"
+                    mountPath: "/var/run/docker.sock"
+                yamlMergeStrategy: "override"
                   workingDir: "/home/jenkins"
                 id: "6170664b-ab08-46ae-a41d-a2721b714a12"
                 idleMinutes: 15
