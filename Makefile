@@ -17,13 +17,13 @@ publish-docker: build
 
 build-agents: build
 	@for dir in $(AGENT_DIRS); do \
-		$(MAKE) -C $$dir build GIT_COMMIT_SHA=$(GIT_COMMIT_SHA); \
+		$(MAKE) -C $$dir build GIT_COMMIT_SHA=$(GIT_COMMIT_SHA) || exit 1; \
 	done
 
 
 publish-agents: publish-docker build-agents
 	@for dir in $(AGENT_DIRS); do \
-		$(MAKE) -C $$dir publish-docker GIT_COMMIT_SHA=$(GIT_COMMIT_SHA); \
+		$(MAKE) -C $$dir publish-docker GIT_COMMIT_SHA=$(GIT_COMMIT_SHA) || exit 1; \
 	done
 
 build-publish-all: publish-agents
