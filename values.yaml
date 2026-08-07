@@ -1,5 +1,5 @@
 controller:
-  serviceType: LoadBalancer
+  serviceType: ClusterIP
   agentListenerEnabled: false
 
   installPlugins:
@@ -18,6 +18,8 @@ controller:
     annotations:
       kubernetes.io/ingress.class: nginx
       cert-manager.io/cluster-issuer: "letsencrypt-prod"
+      nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+      nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
     hostName: jenkins.pedersen.io
     path: /
     pathType: ImplementationSpecific
