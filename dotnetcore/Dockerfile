@@ -6,7 +6,6 @@ USER root
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         libicu-dev \
-        libicu72 \
         zlib1g \
         libgcc-s1 \
         libstdc++6 && \
