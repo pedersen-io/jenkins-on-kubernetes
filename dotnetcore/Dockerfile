@@ -28,5 +28,5 @@ ENV PATH="/usr/share/dotnet:${PATH}"
 # Verify installation
 RUN dotnet --list-sdks
 
-USER jenkins
+USER root
 WORKDIR /home/jenkins
