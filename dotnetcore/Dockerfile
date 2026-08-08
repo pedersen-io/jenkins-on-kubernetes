@@ -2,15 +2,16 @@ FROM build-jenkins-base
 
 USER root
 
-# Install runtime dependencies required by .NET
+# Install runtime dependencies required by .NET and Docker CLI
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-        libicu-dev \
-        zlib1g \
-        libgcc-s1 \
-        libstdc++6 \
-        ca-certificates \
-        curl && \
+    libicu-dev \
+    zlib1g \
+    libgcc-s1 \
+    libstdc++6 \
+    ca-certificates \
+    curl \
+    docker.io && \
     rm -rf /var/lib/apt/lists/*
 
 # Install .NET SDKs
@@ -26,7 +27,8 @@ ENV DOTNET_ROOT=/usr/share/dotnet
 ENV PATH="/usr/share/dotnet:${PATH}"
 
 # Verify installation
-RUN dotnet --list-sdks
+RUN dotnet --list-sdks && \
+    docker --version
 
 USER root
 WORKDIR /home/jenkins
