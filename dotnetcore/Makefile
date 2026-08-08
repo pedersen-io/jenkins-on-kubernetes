@@ -2,7 +2,7 @@ GIT_COMMIT_SHA ?= $(shell git rev-parse HEAD)
 IMAGE_NAME = derekpedersen/build-dotnetcore
 
 build:
-	docker build ./ \
+	docker build --no-cache ./ \
 		-t $(IMAGE_NAME):latest \
 		-t $(IMAGE_NAME):$(GIT_COMMIT_SHA)
 
