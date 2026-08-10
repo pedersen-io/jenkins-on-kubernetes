@@ -1,25 +1,59 @@
-FROM jenkins/jnlp-slave
+FROM jenkins/inbound-agent:latest
 
 USER root
 
-# apt-get update, build essentials, kubectl
+# Install build tools, kubectl dependencies, and Docker CLI dependencies
 RUN apt-get update -qq && \
-    apt-get install -qqy apt-transport-https ca-certificates curl gnupg2 software-properties-common build-essential jq libapparmor-dev libseccomp-dev && \
-    apt-get update -y && \
-    apt-get install -y kubectl
+    apt-get install -qqy --no-install-recommends \
+        apt-transport-https \
+        ca-certificates \
+        curl \
+        gnupg2 \
+        lsb-release \
+        build-essential \
+        jq \
+        libapparmor-dev \
+        libseccomp-dev && \
+    rm -rf /var/lib/apt/lists/*
 
-# docker
-RUN curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add - && \
-        apt-key fingerprint 0EBFCD88 && \
-        add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable" && \
-        apt-get update -qq && \
-        apt-get install -qqy docker-ce && \
-        usermod -aG docker jenkins
-RUN gpasswd -a jenkins docker
+# Install kubectl
+RUN curl -fsSL -o /tmp/kubectl \
+        "https://dl.k8s.io/release/$(curl -fsSL https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" && \
+    install -o root -g root -m 0755 /tmp/kubectl /usr/local/bin/kubectl && \
+    rm -f /tmp/kubectl
 
-# helm
-RUN curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 && \
-    chmod 700 get_helm.sh && \
-    ./get_helm.sh
+# Install Docker CLI only
+# Docker daemon runs on the Kubernetes node.
+RUN curl -fsSL https://download.docker.com/linux/debian/gpg | \
+        gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg && \
+    echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian $(lsb_release -cs) stable" \
+        > /etc/apt/sources.list.d/docker.list && \
+    apt-get update -qq && \
+    apt-get install -qqy --no-install-recommends docker-ce-cli && \
+    rm -rf /var/lib/apt/lists/*
 
-ENTRYPOINT ["jenkins-slave"]
+# Add Jenkins user to docker group
+RUN groupadd -f docker && \
+    usermod -aG docker jenkins
+
+# Install Helm
+RUN curl -fsSL -o /tmp/get_helm.sh \
+        https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 && \
+    chmod 700 /tmp/get_helm.sh && \
+    /tmp/get_helm.sh && \
+    rm -f /tmp/get_helm.sh
+
+# Verify installed tools
+RUN echo "=== Docker ===" && \
+    docker --version && \
+    echo "=== kubectl ===" && \
+    kubectl version --client && \
+    echo "=== Helm ===" && \
+    helm version --short
+
+# Stay root so docker.sock works
+USER root
+
+WORKDIR /home/jenkins
+
+ENTRYPOINT ["jenkins-agent"]

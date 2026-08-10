@@ -1,8 +1,11 @@
-export GIT_COMMIT_SHA = $(shell git rev-parse HEAD)
+GIT_COMMIT_SHA ?= $(shell git rev-parse HEAD)
+IMAGE_NAME = derekpedersen/build-dotnetcore
 
 build:
-	docker build ./ -t build-dotnetcore
+	docker build --no-cache ./ \
+		-t $(IMAGE_NAME):latest \
+		-t $(IMAGE_NAME):$(GIT_COMMIT_SHA)
 
-publish-docker:
-	docker tag build-dotnetcore derekpedersen/build-dotnetcore:latest
-	docker push derekpedersen/build-dotnetcore:latest
+publish-docker: build
+	docker push $(IMAGE_NAME):latest
+	docker push $(IMAGE_NAME):$(GIT_COMMIT_SHA)

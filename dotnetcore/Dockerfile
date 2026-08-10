@@ -2,10 +2,53 @@ FROM build-jenkins-base
 
 USER root
 
-# dotnetcore
-RUN curl -sOL https://packages.microsoft.com/config/debian/11/packages-microsoft-prod.deb && \
-    dpkg -i packages-microsoft-prod.deb && \
-    apt-get update && \
-    apt-get install -y dotnet-sdk-6.0
+# ------------------------------------------------------------
+# Install runtime dependencies required by .NET
+# ------------------------------------------------------------
 
-ENTRYPOINT ["jenkins-slave"] 
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        libicu-dev \
+        zlib1g \
+        libgcc-s1 \
+        libstdc++6 \
+        ca-certificates \
+        curl && \
+    rm -rf /var/lib/apt/lists/*
+
+# ------------------------------------------------------------
+# Install .NET SDKs
+# ------------------------------------------------------------
+
+RUN curl -fsSL https://dot.net/v1/dotnet-install.sh \
+        -o /tmp/dotnet-install.sh && \
+    chmod +x /tmp/dotnet-install.sh && \
+    /tmp/dotnet-install.sh \
+        --channel 6.0 \
+        --quality GA \
+        --install-dir /usr/share/dotnet && \
+    /tmp/dotnet-install.sh \
+        --channel 8.0 \
+        --quality GA \
+        --install-dir /usr/share/dotnet && \
+    /tmp/dotnet-install.sh \
+        --channel 10.0 \
+        --quality GA \
+        --install-dir /usr/share/dotnet && \
+    ln -sf /usr/share/dotnet/dotnet /usr/local/bin/dotnet && \
+    rm -f /tmp/dotnet-install.sh
+
+# Configure .NET environment
+ENV DOTNET_ROOT=/usr/share/dotnet
+ENV PATH="/usr/share/dotnet:${PATH}"
+
+# ------------------------------------------------------------
+# Verify .NET installation
+# ------------------------------------------------------------
+
+RUN echo "=== Installed .NET SDKs ===" && \
+    dotnet --list-sdks
+
+USER root
+
+WORKDIR /home/jenkins
