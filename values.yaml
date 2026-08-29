@@ -1,4 +1,5 @@
 controller:
+  replicas: 1
   serviceType: ClusterIP
   agentListenerEnabled: false
 
@@ -9,7 +10,30 @@ controller:
     - configuration-as-code
     - git-client
     - github
-  installLatestPlugins: true
+  installLatestPlugins: false
+  initializeOnce: true
+
+  resources:
+    requests:
+      cpu: "250m"
+      memory: "1Gi"
+    limits:
+      cpu: "2000m"
+      memory: "4Gi"
+
+  probes:
+    startupProbe:
+      failureThreshold: 30
+      periodSeconds: 10
+      timeoutSeconds: 10
+    livenessProbe:
+      failureThreshold: 8
+      periodSeconds: 15
+      timeoutSeconds: 10
+    readinessProbe:
+      failureThreshold: 6
+      periodSeconds: 10
+      timeoutSeconds: 10
 
   ingress:
     enabled: true
@@ -153,3 +177,5 @@ controller:
 persistence:
   enabled: true
   size: 8Gi
+
+  
