@@ -20,7 +20,7 @@ RUN mkdir -p /home/jenkins/go/bin && \
     go install github.com/golang/mock/mockgen@latest && \
     os=$(uname | tr '[:upper:]' '[:lower:]') && \
     download_url=$(curl -s https://api.github.com/repos/go-swagger/go-swagger/releases/latest | \
-        jq -r --arg suffix "${os}_amd64" '.assets[] | select(.name | contains($suffix)) | .browser_download_url') && \
+        jq -r --arg suffix "${os}_amd64" '.assets[] | select(.name | endswith($suffix)) | .browser_download_url') && \
     curl -o /usr/local/bin/swagger -L "$download_url" && \
     chmod +x /usr/local/bin/swagger && \
     go clean -cache -modcache
