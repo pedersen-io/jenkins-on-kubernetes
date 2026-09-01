@@ -10,7 +10,7 @@ controller:
     - configuration-as-code
     - git-client
     - github
-  installLatestPlugins: false
+  installLatestPlugins: true
   initializeOnce: true
 
   resources:
