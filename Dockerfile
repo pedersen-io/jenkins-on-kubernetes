@@ -2,7 +2,7 @@ FROM jenkins/inbound-agent:latest
 
 USER root
 
-# Install build tools, kubectl dependencies, and Docker CLI dependencies
+# Install kubectl/Docker CLI dependencies (no compiler toolchain needed, CLIs are prebuilt binaries)
 RUN apt-get update -qq && \
     apt-get install -qqy --no-install-recommends \
         apt-transport-https \
@@ -10,17 +10,21 @@ RUN apt-get update -qq && \
         curl \
         gnupg2 \
         lsb-release \
-        build-essential \
-        jq \
-        libapparmor-dev \
-        libseccomp-dev && \
+        jq && \
     rm -rf /var/lib/apt/lists/*
 
-# Install kubectl
+# Install kubectl, add jenkins to docker group, and install Helm
 RUN curl -fsSL -o /tmp/kubectl \
         "https://dl.k8s.io/release/$(curl -fsSL https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" && \
     install -o root -g root -m 0755 /tmp/kubectl /usr/local/bin/kubectl && \
-    rm -f /tmp/kubectl
+    rm -f /tmp/kubectl && \
+    groupadd -f docker && \
+    usermod -aG docker jenkins && \
+    curl -fsSL -o /tmp/get_helm.sh \
+        https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 && \
+    chmod 700 /tmp/get_helm.sh && \
+    /tmp/get_helm.sh && \
+    rm -f /tmp/get_helm.sh
 
 # Install Docker CLI only
 # Docker daemon runs on the Kubernetes node.
@@ -31,17 +35,6 @@ RUN curl -fsSL https://download.docker.com/linux/debian/gpg | \
     apt-get update -qq && \
     apt-get install -qqy --no-install-recommends docker-ce-cli && \
     rm -rf /var/lib/apt/lists/*
-
-# Add Jenkins user to docker group
-RUN groupadd -f docker && \
-    usermod -aG docker jenkins
-
-# Install Helm
-RUN curl -fsSL -o /tmp/get_helm.sh \
-        https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 && \
-    chmod 700 /tmp/get_helm.sh && \
-    /tmp/get_helm.sh && \
-    rm -f /tmp/get_helm.sh
 
 # Verify installed tools
 RUN echo "=== Docker ===" && \
