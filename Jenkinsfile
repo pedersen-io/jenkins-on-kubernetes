@@ -17,7 +17,7 @@ pipeline {
             steps {
                 dir('/root/workspace/go/src/github.com/derekpedersen/gke-jenkins') {
                     sh 'make build'
-                    withDockerRegistry([credentialsId: 'derekpedersen_docker', url: "https://index.docker.io/v1/"]) {
+                    withDockerRegistry([credentialsId: 'docker-jenkins-pat', url: "https://index.docker.io/v1/"]) {
                         sh 'make publish-docker'
                     }
                     // GCR publish removed for Docker Hub migration
@@ -28,7 +28,7 @@ pipeline {
             steps {
                 dir('/root/workspace/go/src/github.com/derekpedersen/gke-jenkins/golang') {
                     sh 'make build'
-                    withDockerRegistry([credentialsId: 'derekpedersen_docker', url: "https://index.docker.io/v1/"]) {
+                    withDockerRegistry([credentialsId: 'docker-jenkins-pat', url: "https://index.docker.io/v1/"]) {
                         sh 'make publish-docker'
                     }
                     // GCR publish removed for Docker Hub migration
@@ -39,7 +39,7 @@ pipeline {
             steps {
                 dir('/root/workspace/go/src/github.com/derekpedersen/gke-jenkins/node') {
                     sh 'make build'
-                    withDockerRegistry([credentialsId: 'derekpedersen_docker', url: "https://index.docker.io/v1/"]) {
+                    withDockerRegistry([credentialsId: 'docker-jenkins-pat', url: "https://index.docker.io/v1/"]) {
                         sh 'make publish-docker'
                     }
                     // GCR publish removed for Docker Hub migration
@@ -50,7 +50,7 @@ pipeline {
             steps {
                 dir('/root/workspace/go/src/github.com/derekpedersen/gke-jenkins/dotnetcore') {
                     sh 'make build'
-                    withDockerRegistry([credentialsId: 'derekpedersen_docker', url: "https://index.docker.io/v1/"]) {
+                    withDockerRegistry([credentialsId: 'docker-jenkins-pat', url: "https://index.docker.io/v1/"]) {
                         sh 'make publish-docker'
                     }
                     // GCR publish removed for Docker Hub migration
