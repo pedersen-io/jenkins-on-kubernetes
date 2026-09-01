@@ -78,6 +78,20 @@ controller:
                   resourceRequestCpu: ".1"
                   resourceRequestMemory: "512Mi"
                   workingDir: "/home/jenkins"
+                  envVars:
+                  - envVar:
+                      key: "DOCKER_HOST"
+                      value: "tcp://127.0.0.1:2375"
+                - alwaysPullImage: true
+                  envVars:
+                  - envVar:
+                      key: "DOCKER_TLS_CERTDIR"
+                      value: ""
+                  image: "docker:29-dind"
+                  name: "docker"
+                  privileged: true
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins"
                 id: "e4a18b6c-8e74-498c-adad-53d145c92728"
                 idleMinutes: 15
                 instanceCap: 5
@@ -87,10 +101,6 @@ controller:
                 podRetention: "onFailure"
                 serviceAccount: "default"
                 slaveConnectTimeout: 600
-                volumes:
-                - hostPathVolume:
-                    hostPath: "/var/run/docker.sock"
-                    mountPath: "/var/run/docker.sock"
                 yamlMergeStrategy: "override"
 
               - containers:
@@ -106,6 +116,20 @@ controller:
                   name: "jnlp"
                   ttyEnabled: true
                   workingDir: "/home/jenkins"
+                  envVars:
+                  - envVar:
+                      key: "DOCKER_HOST"
+                      value: "tcp://127.0.0.1:2375"
+                - alwaysPullImage: true
+                  envVars:
+                  - envVar:
+                      key: "DOCKER_TLS_CERTDIR"
+                      value: ""
+                  image: "docker:29-dind"
+                  name: "docker"
+                  privileged: true
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins"
                 id: "6170664b-ab08-46ae-a41d-a2721b714a12"
                 idleMinutes: 15
                 instanceCap: 5
@@ -113,10 +137,6 @@ controller:
                 name: "node"
                 podRetention: "onFailure"
                 slaveConnectTimeout: 600
-                volumes:
-                - hostPathVolume:
-                    hostPath: "/var/run/docker.sock"
-                    mountPath: "/var/run/docker.sock"
                 yamlMergeStrategy: "override"
 
               - containers:
@@ -132,6 +152,20 @@ controller:
                   name: "jnlp"
                   ttyEnabled: true
                   workingDir: "/home/jenkins/agent"
+                  envVars:
+                  - envVar:
+                      key: "DOCKER_HOST"
+                      value: "tcp://127.0.0.1:2375"
+                - alwaysPullImage: true
+                  envVars:
+                  - envVar:
+                      key: "DOCKER_TLS_CERTDIR"
+                      value: ""
+                  image: "docker:29-dind"
+                  name: "docker"
+                  privileged: true
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins/agent"
                 id: "02b8986f-3c2b-46a9-9b2a-00ba2e83cc4e"
                 idleMinutes: 15
                 instanceCap: 5
@@ -139,10 +173,6 @@ controller:
                 name: "jenkins"
                 podRetention: "onFailure"
                 slaveConnectTimeout: 600
-                volumes:
-                - hostPathVolume:
-                    hostPath: "/var/run/docker.sock"
-                    mountPath: "/var/run/docker.sock"
                 yamlMergeStrategy: "override"
 
               - containers:
@@ -158,6 +188,20 @@ controller:
                   name: "jnlp"
                   ttyEnabled: true
                   workingDir: "/home/jenkins"
+                  envVars:
+                  - envVar:
+                      key: "DOCKER_HOST"
+                      value: "tcp://127.0.0.1:2375"
+                - alwaysPullImage: true
+                  envVars:
+                  - envVar:
+                      key: "DOCKER_TLS_CERTDIR"
+                      value: ""
+                  image: "docker:29-dind"
+                  name: "docker"
+                  privileged: true
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins"
                 id: "6170664b-ab08-46ae-a41d-a2721b714a12"
                 idleMinutes: 15
                 instanceCap: 5
@@ -165,10 +209,6 @@ controller:
                 name: "dotnetcore"
                 podRetention: "onFailure"
                 slaveConnectTimeout: 600
-                volumes:
-                - hostPathVolume:
-                    hostPath: "/var/run/docker.sock"
-                    mountPath: "/var/run/docker.sock"
                 yamlMergeStrategy: "override"
 
   imagePullSecrets:
