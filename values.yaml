@@ -75,8 +75,8 @@ controller:
                   name: "jnlp"
                   resourceLimitCpu: ".5"
                   resourceLimitMemory: "512Mi"
-                  resourceRequestCpu: ".1"
-                  resourceRequestMemory: "512Mi"
+                  resourceRequestCpu: ".025"
+                  resourceRequestMemory: "128Mi"
                   workingDir: "/home/jenkins"
                   envVars:
                   - envVar:
@@ -92,13 +92,13 @@ controller:
                   privileged: true
                   resourceLimitCpu: "1"
                   resourceLimitMemory: "768Mi"
-                  resourceRequestCpu: ".25"
-                  resourceRequestMemory: "384Mi"
+                  resourceRequestCpu: ".05"
+                  resourceRequestMemory: "192Mi"
                   ttyEnabled: true
                   workingDir: "/home/jenkins"
                 id: "e4a18b6c-8e74-498c-adad-53d145c92728"
                 idleMinutes: 15
-                instanceCap: 5
+                instanceCap: 1
                 label: "build-golang-stable"
                 name: "golang"
                 nodeUsageMode: "NORMAL"
@@ -120,8 +120,8 @@ controller:
                   name: "jnlp"
                   resourceLimitCpu: ".5"
                   resourceLimitMemory: "512Mi"
-                  resourceRequestCpu: ".1"
-                  resourceRequestMemory: "512Mi"
+                  resourceRequestCpu: ".025"
+                  resourceRequestMemory: "128Mi"
                   ttyEnabled: true
                   workingDir: "/home/jenkins"
                   envVars:
@@ -138,13 +138,13 @@ controller:
                   privileged: true
                   resourceLimitCpu: "1"
                   resourceLimitMemory: "768Mi"
-                  resourceRequestCpu: ".25"
-                  resourceRequestMemory: "384Mi"
+                  resourceRequestCpu: ".05"
+                  resourceRequestMemory: "192Mi"
                   ttyEnabled: true
                   workingDir: "/home/jenkins"
                 id: "6170664b-ab08-46ae-a41d-a2721b714a12"
                 idleMinutes: 15
-                instanceCap: 5
+                instanceCap: 1
                 label: "build-node-stable"
                 name: "node"
                 podRetention: "onFailure"
@@ -164,8 +164,8 @@ controller:
                   name: "jnlp"
                   resourceLimitCpu: ".5"
                   resourceLimitMemory: "512Mi"
-                  resourceRequestCpu: ".1"
-                  resourceRequestMemory: "512Mi"
+                  resourceRequestCpu: ".025"
+                  resourceRequestMemory: "128Mi"
                   ttyEnabled: true
                   workingDir: "/home/jenkins/agent"
                   envVars:
@@ -182,13 +182,13 @@ controller:
                   privileged: true
                   resourceLimitCpu: "1"
                   resourceLimitMemory: "768Mi"
-                  resourceRequestCpu: ".25"
-                  resourceRequestMemory: "384Mi"
+                  resourceRequestCpu: ".05"
+                  resourceRequestMemory: "192Mi"
                   ttyEnabled: true
                   workingDir: "/home/jenkins/agent"
                 id: "02b8986f-3c2b-46a9-9b2a-00ba2e83cc4e"
                 idleMinutes: 15
-                instanceCap: 5
+                instanceCap: 1
                 label: "build-base-stable"
                 name: "jenkins"
                 podRetention: "onFailure"
@@ -207,9 +207,9 @@ controller:
                     timeoutSeconds: 0
                   name: "jnlp"
                   resourceLimitCpu: ".5"
-                  resourceLimitMemory: "768Mi"
-                  resourceRequestCpu: ".1"
-                  resourceRequestMemory: "768Mi"
+                  resourceLimitMemory: "512Mi"
+                  resourceRequestCpu: ".025"
+                  resourceRequestMemory: "128Mi"
                   ttyEnabled: true
                   workingDir: "/home/jenkins"
                   envVars:
@@ -226,13 +226,13 @@ controller:
                   privileged: true
                   resourceLimitCpu: "1"
                   resourceLimitMemory: "768Mi"
-                  resourceRequestCpu: ".25"
-                  resourceRequestMemory: "384Mi"
+                  resourceRequestCpu: ".05"
+                  resourceRequestMemory: "192Mi"
                   ttyEnabled: true
                   workingDir: "/home/jenkins"
                 id: "6170664b-ab08-46ae-a41d-a2721b714a12"
                 idleMinutes: 15
-                instanceCap: 5
+                instanceCap: 1
                 label: "build-dotnetcore-stable"
                 name: "dotnetcore"
                 podRetention: "onFailure"
