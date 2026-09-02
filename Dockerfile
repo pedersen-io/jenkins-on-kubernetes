@@ -10,7 +10,8 @@ RUN apt-get update -qq && \
         curl \
         gnupg2 \
         lsb-release \
-        jq && \
+        jq \
+        make && \
     rm -rf /var/lib/apt/lists/*
 
 # Install kubectl, add jenkins to docker group, and install Helm
