@@ -33,10 +33,12 @@ publish-agents: publish-docker build-agents
 build-publish-all: publish-agents
 	@echo "Built and published base and agent images."
 
-helm-upgrade:
-	helm upgrade --install $(HELM_RELEASE) $(HELM_CHART) -n $(HELM_NAMESPACE) -f $(HELM_VALUES)
 
-helm-upgrade-init:
+helm-repo-init:
 	helm repo add $(HELM_REPO_NAME) $(HELM_REPO_URL) || true
 	helm repo update
+
+helm-upgrade: helm-repo-init
 	helm upgrade --install $(HELM_RELEASE) $(HELM_CHART) -n $(HELM_NAMESPACE) -f $(HELM_VALUES)
+
+helm-upgrade-init: helm-upgrade
