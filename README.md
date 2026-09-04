@@ -1,32 +1,83 @@
-# Jenkins on DigitalOcean Kubernetes (DOKS)
+# Jenkins on Kubernetes
 
-This repository contains Jenkins controller and agent configuration for running Jenkins in-cluster on DigitalOcean Kubernetes (DOKS).
+Production-minded Jenkins controller and agent image pipeline for Kubernetes-based CI.
 
-## Deploying Jenkins to DigitalOcean Kubernetes (DOKS)
+Project website: https://jenksin.pedersen.io
 
-This project publishes build images to Docker Hub and avoids provider-specific tooling in the controller images. The sections below outline high-level steps to deploy Jenkins in-cluster on DOKS and get CI building and pushing images.
+## Why this project exists
+
+I have spent years building CI/CD systems in Bamboo, GitLab CI, and GitHub Actions. This Jenkins setup is where I can do the same kind of platform work on my own terms, without vendor constraints, and keep learning by shipping.
+
+I run it on my Kubernetes cluster so I can test architecture and workflow patterns end to end: image design, agent behavior, pipeline flow, and day-2 operations.
+
+- CI architecture that is simple to reason about and easy to operate
+- Reproducible image builds and release workflows
+- Kubernetes-native Jenkins agent patterns
+- Practical tradeoffs between speed, reliability, and security
+
+## What this repo builds
+
+Docker Hub profile: [derekpedersen](https://hub.docker.com/u/derekpedersen)
+
+Base image:
+
+- `derekpedersen/build-jenkins-base` ([repo](https://hub.docker.com/r/derekpedersen/build-jenkins-base))
+
+Agent images:
+
+- `derekpedersen/build-dotnetcore` ([repo](https://hub.docker.com/r/derekpedersen/build-dotnetcore))
+- `derekpedersen/build-golang` ([repo](https://hub.docker.com/r/derekpedersen/build-golang))
+- `derekpedersen/build-node` ([repo](https://hub.docker.com/r/derekpedersen/build-node))
+- `derekpedersen/build-python` ([repo](https://hub.docker.com/r/derekpedersen/build-python))
+
+All images are published to Docker Hub with both `latest` and git SHA tags.
+
+## Repo layout
+
+Agent directories:
+
+- dotnetcore/: .NET agent image (Dockerfile + Makefile)
+- golang/: Go agent image (Dockerfile + Makefile)
+- node/: Node.js agent image (Dockerfile + Makefile)
+- python/: Python agent image (Dockerfile + Makefile)
+
+## Quickstart for developers
 
 Prerequisites:
-- `doctl`, `kubectl`, and `helm` installed and authenticated
-- A DOKS cluster created and kubeconfig available
-- Docker Hub credentials for pushing/pulling images
 
-Quick steps:
+- Docker
+- GNU Make
+- kubectl
+- helm
+- Docker Hub account with push access
 
-1. Provision a DOKS cluster (example):
+Build and publish all images:
 
 ```bash
-doctl kubernetes cluster create my-doks-cluster --region nyc1 --node-pool "name=default;size=s-2vcpu-4gb;count=3"
-doctl kubernetes cluster kubeconfig save my-doks-cluster
+make build-publish-all
 ```
 
-2. Create `jenkins` namespace:
+Build everything without pushing:
+
+```bash
+make build-agents
+```
+
+Publish base image only:
+
+```bash
+make publish-docker
+```
+
+## Deploy Jenkins on Kubernetes
+
+Create namespace:
 
 ```bash
 kubectl create namespace jenkins
 ```
 
-3. Create Docker Hub secret (used for image pulls/pushes):
+Create Docker Hub pull secret:
 
 ```bash
 kubectl -n jenkins create secret docker-registry regcred \
@@ -35,38 +86,44 @@ kubectl -n jenkins create secret docker-registry regcred \
   --docker-email=<EMAIL>
 ```
 
-4. Provide Jenkins Configuration as Code (CasC):
-- Option A: Keep using the raw GitHub URL in `casCGlobalConfig.configurationPath` (ensure accessibility).
-- Option B: Create a ConfigMap from your own CasC YAML and mount it into the Jenkins controller.
-- Option C: Use the sample Kubernetes agent pod template definitions from `containers_config.yaml` as a starting point for Jenkins agents.
-
-Create the local CasC file first, for example `casc.yaml`:
+Install or upgrade Jenkins:
 
 ```bash
-kubectl -n jenkins create configmap jenkins-casc --from-file=casc.yaml
+make helm-upgrade-init
 ```
 
-5. Install Jenkins with Helm (example):
-
-```bash
-helm repo add jenkins https://charts.jenkins.io
-helm repo update
-helm upgrade --install jenkins jenkins/jenkins -n jenkins -f values.yaml
-```
-
-6. Retrieve the generated Jenkins admin password:
+Get admin password:
 
 ```bash
 kubectl -n jenkins get secret jenkins -o jsonpath='{.data.jenkins-admin-password}' | base64 --decode
 ```
 
-6. Ensure the Jenkins Kubernetes cloud and pod templates in your CasC YAML and `containers_config.yaml` reference the Docker Hub image names and, if necessary, reference the `regcred` imagePullSecret.
+## AI agent runbook
 
-7. Build strategy:
-- Current repo uses host `docker.sock` mounts in pod templates. This may work if your DOKS node image runs Docker and hostPath mounts are allowed. Mounting the host socket grants privileged access to the node — consider security implications.
-- Recommended alternative: use Kaniko or BuildKit for in-cluster builds (no host docker). If you need, add a Kaniko executor stage in `Jenkinsfile` and an image-pull secret.
+If you are an AI coding/build agent modifying this repo, follow these rules:
 
-8. Cleanup old cloud provider credentials: Remove legacy provider-specific credential entries from any CasC YAML if they are no longer needed.
+1. Keep each agent folder structure consistent: `Dockerfile` + `Makefile`.
+2. Start language agent Dockerfiles from `FROM build-jenkins-base` unless there is a clear reason not to.
+3. Keep image naming consistent: `derekpedersen/build-<language>`.
+4. Keep `GIT_COMMIT_SHA ?= $(shell git rev-parse HEAD)` in every agent Makefile.
+5. Keep `build` and `publish-docker` targets in every agent Makefile.
+6. When adding a new agent, update `AGENT_DIRS` in the root `Makefile`.
+7. Prefer minimal, targeted changes over broad refactors.
+8. Validate with at least:
 
-Verification:
-- Trigger a Jenkins pipeline that builds and pushes an image; confirm the image appears in Docker Hub and agents connect successfully.
+```bash
+grep -n 'AGENT_DIRS' Makefile
+make -n build-agents
+```
+
+Definition of done for agent changes:
+
+- Builds complete locally for affected images.
+- Naming conventions and target conventions are preserved.
+- README and deployment notes stay aligned with Docker Hub usage.
+
+## Architecture notes and tradeoffs
+
+- Current workflow prioritizes straightforward Docker-based builds.
+- If using host Docker socket mounts inside Kubernetes agents, treat that as a privileged capability and scope access carefully.
+- For stricter multi-tenant isolation, migrate build stages to Kaniko or BuildKit rootless patterns.

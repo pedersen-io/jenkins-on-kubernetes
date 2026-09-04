@@ -20,7 +20,6 @@ pipeline {
                     withDockerRegistry([credentialsId: 'docker-jenkins-pat', url: "https://index.docker.io/v1/"]) {
                         sh 'make publish-docker'
                     }
-                    // GCR publish removed for Docker Hub migration
                 }
             }
         }
@@ -31,7 +30,6 @@ pipeline {
                     withDockerRegistry([credentialsId: 'docker-jenkins-pat', url: "https://index.docker.io/v1/"]) {
                         sh 'make publish-docker'
                     }
-                    // GCR publish removed for Docker Hub migration
                 }
             }
         }
@@ -42,7 +40,6 @@ pipeline {
                     withDockerRegistry([credentialsId: 'docker-jenkins-pat', url: "https://index.docker.io/v1/"]) {
                         sh 'make publish-docker'
                     }
-                    // GCR publish removed for Docker Hub migration
                 }
             }
         }
@@ -53,7 +50,6 @@ pipeline {
                     withDockerRegistry([credentialsId: 'docker-jenkins-pat', url: "https://index.docker.io/v1/"]) {
                         sh 'make publish-docker'
                     }
-                    // GCR publish removed for Docker Hub migration
                 }
             }
         }
