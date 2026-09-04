@@ -6,7 +6,7 @@ Project website: https://jenksin.pedersen.io
 
 ## Why this project exists
 
-I have spent years building CI/CD systems in Bamboo, GitLab CI, and GitHub Actions. This Jenkins setup is where I can do the same kind of platform work on my own terms, without vendor constraints, and keep learning by shipping.
+I have spent years building CI/CD systems in Bamboo, GitLab CI, and GitHub Actions. This Jenkins setup gives me a free, open ecosystem where I can self-host, keep learning by shipping, and iterate quickly.
 
 I run it on my Kubernetes cluster so I can test architecture and workflow patterns end to end: image design, agent behavior, pipeline flow, and day-2 operations.
 
@@ -29,6 +29,13 @@ Agent images:
 - `derekpedersen/build-golang` ([repo](https://hub.docker.com/r/derekpedersen/build-golang))
 - `derekpedersen/build-node` ([repo](https://hub.docker.com/r/derekpedersen/build-node))
 - `derekpedersen/build-python` ([repo](https://hub.docker.com/r/derekpedersen/build-python))
+- `derekpedersen/build-rust` ([repo](https://hub.docker.com/r/derekpedersen/build-rust))
+- `derekpedersen/build-c` ([repo](https://hub.docker.com/r/derekpedersen/build-c))
+- `derekpedersen/build-java` ([repo](https://hub.docker.com/r/derekpedersen/build-java))
+- `derekpedersen/build-php` ([repo](https://hub.docker.com/r/derekpedersen/build-php))
+- `derekpedersen/build-ruby` ([repo](https://hub.docker.com/r/derekpedersen/build-ruby))
+- `derekpedersen/build-k8s-tooling` ([repo](https://hub.docker.com/r/derekpedersen/build-k8s-tooling))
+- `derekpedersen/build-playwright` ([repo](https://hub.docker.com/r/derekpedersen/build-playwright))
 
 All images are published to Docker Hub with both `latest` and git SHA tags.
 
@@ -40,6 +47,13 @@ Agent directories:
 - golang/: Go agent image (Dockerfile + Makefile)
 - node/: Node.js agent image (Dockerfile + Makefile)
 - python/: Python agent image (Dockerfile + Makefile)
+- rust/: Rust agent image (Dockerfile + Makefile)
+- c/: C/C++ agent image (Dockerfile + Makefile)
+- java/: Java agent image (Dockerfile + Makefile)
+- php/: PHP agent image (Dockerfile + Makefile)
+- ruby/: Ruby agent image (Dockerfile + Makefile)
+- k8s-tooling/: Kubernetes diagnostics and operations image (Dockerfile + Makefile)
+- playwright/: Browser testing image for Playwright runs (Dockerfile + Makefile)
 
 ## Quickstart for developers
 
