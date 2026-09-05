@@ -12,13 +12,15 @@ RUN apt-get update -qq && \
         ca-certificates \
         curl && \
     ln -sf /usr/bin/python3 /usr/local/bin/python && \
-    ln -sf /usr/bin/pip3 /usr/local/bin/pip && \
-    python -m pip install --upgrade pip setuptools wheel && \
+    python3 -m venv /opt/venv && \
+    /opt/venv/bin/pip install --upgrade pip setuptools wheel && \
     rm -rf /var/lib/apt/lists/*
 
-RUN pip install --no-cache-dir \
+RUN /opt/venv/bin/pip install --no-cache-dir \
     pytest \
     black \
     flake8
+
+ENV PATH="/opt/venv/bin:${PATH}"
 
 WORKDIR /home/jenkins
