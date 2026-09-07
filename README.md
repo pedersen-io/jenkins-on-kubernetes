@@ -6,7 +6,7 @@ Project website: https://jenksin.pedersen.io
 
 ## Why this project exists
 
-I have spent years building CI/CD systems in Bamboo, GitLab CI, and GitHub Actions. This Jenkins setup gives me a free, open ecosystem where I can self-host, keep learning by shipping, and iterate quickly.
+I have spent years building CI/CD systems in Bamboo, GitLab CI, and GitHub Actions. This Jenkins setup gives me a free, open ecosystem where I can self-host, keep learning by shipping, and iterate quickly.~
 
 I run it on my Kubernetes cluster so I can test architecture and workflow patterns end to end: image design, agent behavior, pipeline flow, and day-2 operations.
 
@@ -135,6 +135,18 @@ Definition of done for agent changes:
 - Builds complete locally for affected images.
 - Naming conventions and target conventions are preserved.
 - README and deployment notes stay aligned with Docker Hub usage.
+
+Keeping image options in sync:
+
+1. Treat AGENT_DIRS in the root Makefile as the build source of truth.
+2. Keep this README image list aligned with AGENT_DIRS and agent folders in the repo.
+3. Keep Jenkinsfile stages aligned with AGENT_DIRS so CI publishes every listed image.
+4. Quick validation before merge:
+
+```bash
+grep -n 'AGENT_DIRS' Makefile
+ls -1
+```
 
 ## Architecture notes and tradeoffs
 
