@@ -36,13 +36,16 @@ RUN yq_url=$(curl -fsSL https://api.github.com/repos/mikefarah/yq/releases/lates
     tar -xzf /tmp/stern.tar.gz -C /tmp && \
     install -m 0755 /tmp/stern /usr/local/bin/stern && \
     rm -f /tmp/stern /tmp/stern.tar.gz && \
-    kubectx_url=$(curl -fsSL https://api.github.com/repos/ahmetb/kubectx/releases/latest | \
+    kubectx_release=$(curl -fsSL https://api.github.com/repos/ahmetb/kubectx/releases/latest) && \
+    kubectx_tag=$(printf '%s' "$kubectx_release" | jq -r '.tag_name') && \
+    kubectx_url=$(printf '%s' "$kubectx_release" | \
         jq -r '.assets[] | select(.name | test("kubectx_.*_linux_x86_64\\.tar\\.gz$")) | .browser_download_url' | head -n 1) && \
     test -n "$kubectx_url" && \
     curl -fsSL -o /tmp/kubectx.tar.gz "$kubectx_url" && \
     tar -xzf /tmp/kubectx.tar.gz -C /tmp && \
     install -m 0755 /tmp/kubectx /usr/local/bin/kubectx && \
-    install -m 0755 /tmp/kubens /usr/local/bin/kubens && \
-    rm -f /tmp/kubectx /tmp/kubens /tmp/kubectx.tar.gz
+    curl -fsSL -o /usr/local/bin/kubens "https://raw.githubusercontent.com/ahmetb/kubectx/${kubectx_tag}/kubens" && \
+    chmod +x /usr/local/bin/kubens && \
+    rm -f /tmp/kubectx /tmp/kubectx.tar.gz
 
 WORKDIR /home/jenkins
