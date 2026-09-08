@@ -239,6 +239,358 @@ controller:
                 slaveConnectTimeout: 600
                 yamlMergeStrategy: "override"
 
+              - containers:
+                - alwaysPullImage: true
+                  args: "^${computer.jnlpmac} ^${computer.name}"
+                  image: "derekpedersen/build-python:latest"
+                  livenessProbe:
+                    failureThreshold: 0
+                    initialDelaySeconds: 0
+                    periodSeconds: 0
+                    successThreshold: 0
+                    timeoutSeconds: 0
+                  name: "jnlp"
+                  resourceLimitCpu: ".5"
+                  resourceLimitMemory: "512Mi"
+                  resourceRequestCpu: ".025"
+                  resourceRequestMemory: "128Mi"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins"
+                  envVars:
+                  - envVar:
+                      key: "DOCKER_HOST"
+                      value: "tcp://127.0.0.1:2375"
+                - alwaysPullImage: true
+                  envVars:
+                  - envVar:
+                      key: "DOCKER_TLS_CERTDIR"
+                      value: ""
+                  image: "docker:29-dind"
+                  name: "docker"
+                  privileged: true
+                  resourceLimitCpu: "1"
+                  resourceLimitMemory: "768Mi"
+                  resourceRequestCpu: ".05"
+                  resourceRequestMemory: "192Mi"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins"
+                id: "7d3a66a7-9f0e-4d80-b582-7f9d87a8e0a1"
+                idleMinutes: 15
+                instanceCap: 1
+                label: "build-python-stable"
+                name: "python"
+                podRetention: "onFailure"
+                slaveConnectTimeout: 600
+                yamlMergeStrategy: "override"
+
+              - containers:
+                - alwaysPullImage: true
+                  args: "^${computer.jnlpmac} ^${computer.name}"
+                  image: "derekpedersen/build-rust:latest"
+                  livenessProbe:
+                    failureThreshold: 0
+                    initialDelaySeconds: 0
+                    periodSeconds: 0
+                    successThreshold: 0
+                    timeoutSeconds: 0
+                  name: "jnlp"
+                  resourceLimitCpu: ".5"
+                  resourceLimitMemory: "512Mi"
+                  resourceRequestCpu: ".025"
+                  resourceRequestMemory: "128Mi"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins"
+                  envVars:
+                  - envVar:
+                      key: "DOCKER_HOST"
+                      value: "tcp://127.0.0.1:2375"
+                - alwaysPullImage: true
+                  envVars:
+                  - envVar:
+                      key: "DOCKER_TLS_CERTDIR"
+                      value: ""
+                  image: "docker:29-dind"
+                  name: "docker"
+                  privileged: true
+                  resourceLimitCpu: "1"
+                  resourceLimitMemory: "768Mi"
+                  resourceRequestCpu: ".05"
+                  resourceRequestMemory: "192Mi"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins"
+                id: "d469d9c0-dfc9-4d97-b6e7-aef0d7cf6d4b"
+                idleMinutes: 15
+                instanceCap: 1
+                label: "build-rust-stable"
+                name: "rust"
+                podRetention: "onFailure"
+                slaveConnectTimeout: 600
+                yamlMergeStrategy: "override"
+
+              - containers:
+                - alwaysPullImage: true
+                  args: "^${computer.jnlpmac} ^${computer.name}"
+                  image: "derekpedersen/build-c:latest"
+                  livenessProbe:
+                    failureThreshold: 0
+                    initialDelaySeconds: 0
+                    periodSeconds: 0
+                    successThreshold: 0
+                    timeoutSeconds: 0
+                  name: "jnlp"
+                  resourceLimitCpu: ".5"
+                  resourceLimitMemory: "512Mi"
+                  resourceRequestCpu: ".025"
+                  resourceRequestMemory: "128Mi"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins"
+                  envVars:
+                  - envVar:
+                      key: "DOCKER_HOST"
+                      value: "tcp://127.0.0.1:2375"
+                - alwaysPullImage: true
+                  envVars:
+                  - envVar:
+                      key: "DOCKER_TLS_CERTDIR"
+                      value: ""
+                  image: "docker:29-dind"
+                  name: "docker"
+                  privileged: true
+                  resourceLimitCpu: "1"
+                  resourceLimitMemory: "768Mi"
+                  resourceRequestCpu: ".05"
+                  resourceRequestMemory: "192Mi"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins"
+                id: "8a8b3838-8d97-46cc-9b50-72e7316c8964"
+                idleMinutes: 15
+                instanceCap: 1
+                label: "build-c-stable"
+                name: "c"
+                podRetention: "onFailure"
+                slaveConnectTimeout: 600
+                yamlMergeStrategy: "override"
+
+              - containers:
+                - alwaysPullImage: true
+                  args: "^${computer.jnlpmac} ^${computer.name}"
+                  image: "derekpedersen/build-java:latest"
+                  livenessProbe:
+                    failureThreshold: 0
+                    initialDelaySeconds: 0
+                    periodSeconds: 0
+                    successThreshold: 0
+                    timeoutSeconds: 0
+                  name: "jnlp"
+                  resourceLimitCpu: ".5"
+                  resourceLimitMemory: "512Mi"
+                  resourceRequestCpu: ".025"
+                  resourceRequestMemory: "128Mi"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins"
+                  envVars:
+                  - envVar:
+                      key: "DOCKER_HOST"
+                      value: "tcp://127.0.0.1:2375"
+                - alwaysPullImage: true
+                  envVars:
+                  - envVar:
+                      key: "DOCKER_TLS_CERTDIR"
+                      value: ""
+                  image: "docker:29-dind"
+                  name: "docker"
+                  privileged: true
+                  resourceLimitCpu: "1"
+                  resourceLimitMemory: "768Mi"
+                  resourceRequestCpu: ".05"
+                  resourceRequestMemory: "192Mi"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins"
+                id: "b7b147ec-0f49-49a0-a6fd-d02153f4290f"
+                idleMinutes: 15
+                instanceCap: 1
+                label: "build-java-stable"
+                name: "java"
+                podRetention: "onFailure"
+                slaveConnectTimeout: 600
+                yamlMergeStrategy: "override"
+
+              - containers:
+                - alwaysPullImage: true
+                  args: "^${computer.jnlpmac} ^${computer.name}"
+                  image: "derekpedersen/build-php:latest"
+                  livenessProbe:
+                    failureThreshold: 0
+                    initialDelaySeconds: 0
+                    periodSeconds: 0
+                    successThreshold: 0
+                    timeoutSeconds: 0
+                  name: "jnlp"
+                  resourceLimitCpu: ".5"
+                  resourceLimitMemory: "512Mi"
+                  resourceRequestCpu: ".025"
+                  resourceRequestMemory: "128Mi"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins"
+                  envVars:
+                  - envVar:
+                      key: "DOCKER_HOST"
+                      value: "tcp://127.0.0.1:2375"
+                - alwaysPullImage: true
+                  envVars:
+                  - envVar:
+                      key: "DOCKER_TLS_CERTDIR"
+                      value: ""
+                  image: "docker:29-dind"
+                  name: "docker"
+                  privileged: true
+                  resourceLimitCpu: "1"
+                  resourceLimitMemory: "768Mi"
+                  resourceRequestCpu: ".05"
+                  resourceRequestMemory: "192Mi"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins"
+                id: "b10036f5-f057-4f65-9f8d-d9400c2c895a"
+                idleMinutes: 15
+                instanceCap: 1
+                label: "build-php-stable"
+                name: "php"
+                podRetention: "onFailure"
+                slaveConnectTimeout: 600
+                yamlMergeStrategy: "override"
+
+              - containers:
+                - alwaysPullImage: true
+                  args: "^${computer.jnlpmac} ^${computer.name}"
+                  image: "derekpedersen/build-ruby:latest"
+                  livenessProbe:
+                    failureThreshold: 0
+                    initialDelaySeconds: 0
+                    periodSeconds: 0
+                    successThreshold: 0
+                    timeoutSeconds: 0
+                  name: "jnlp"
+                  resourceLimitCpu: ".5"
+                  resourceLimitMemory: "512Mi"
+                  resourceRequestCpu: ".025"
+                  resourceRequestMemory: "128Mi"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins"
+                  envVars:
+                  - envVar:
+                      key: "DOCKER_HOST"
+                      value: "tcp://127.0.0.1:2375"
+                - alwaysPullImage: true
+                  envVars:
+                  - envVar:
+                      key: "DOCKER_TLS_CERTDIR"
+                      value: ""
+                  image: "docker:29-dind"
+                  name: "docker"
+                  privileged: true
+                  resourceLimitCpu: "1"
+                  resourceLimitMemory: "768Mi"
+                  resourceRequestCpu: ".05"
+                  resourceRequestMemory: "192Mi"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins"
+                id: "f0b12d7e-f7ca-4816-a9d4-5cab7c620304"
+                idleMinutes: 15
+                instanceCap: 1
+                label: "build-ruby-stable"
+                name: "ruby"
+                podRetention: "onFailure"
+                slaveConnectTimeout: 600
+                yamlMergeStrategy: "override"
+
+              - containers:
+                - alwaysPullImage: true
+                  args: "^${computer.jnlpmac} ^${computer.name}"
+                  image: "derekpedersen/build-k8s-tooling:latest"
+                  livenessProbe:
+                    failureThreshold: 0
+                    initialDelaySeconds: 0
+                    periodSeconds: 0
+                    successThreshold: 0
+                    timeoutSeconds: 0
+                  name: "jnlp"
+                  resourceLimitCpu: ".5"
+                  resourceLimitMemory: "512Mi"
+                  resourceRequestCpu: ".025"
+                  resourceRequestMemory: "128Mi"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins"
+                  envVars:
+                  - envVar:
+                      key: "DOCKER_HOST"
+                      value: "tcp://127.0.0.1:2375"
+                - alwaysPullImage: true
+                  envVars:
+                  - envVar:
+                      key: "DOCKER_TLS_CERTDIR"
+                      value: ""
+                  image: "docker:29-dind"
+                  name: "docker"
+                  privileged: true
+                  resourceLimitCpu: "1"
+                  resourceLimitMemory: "768Mi"
+                  resourceRequestCpu: ".05"
+                  resourceRequestMemory: "192Mi"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins"
+                id: "f6dc7e4a-9246-48ec-8b2b-7221f8903001"
+                idleMinutes: 15
+                instanceCap: 1
+                label: "build-k8s-tooling-stable"
+                name: "k8s-tooling"
+                podRetention: "onFailure"
+                slaveConnectTimeout: 600
+                yamlMergeStrategy: "override"
+
+              - containers:
+                - alwaysPullImage: true
+                  args: "^${computer.jnlpmac} ^${computer.name}"
+                  image: "derekpedersen/build-playwright:latest"
+                  livenessProbe:
+                    failureThreshold: 0
+                    initialDelaySeconds: 0
+                    periodSeconds: 0
+                    successThreshold: 0
+                    timeoutSeconds: 0
+                  name: "jnlp"
+                  resourceLimitCpu: ".5"
+                  resourceLimitMemory: "512Mi"
+                  resourceRequestCpu: ".025"
+                  resourceRequestMemory: "128Mi"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins"
+                  envVars:
+                  - envVar:
+                      key: "DOCKER_HOST"
+                      value: "tcp://127.0.0.1:2375"
+                - alwaysPullImage: true
+                  envVars:
+                  - envVar:
+                      key: "DOCKER_TLS_CERTDIR"
+                      value: ""
+                  image: "docker:29-dind"
+                  name: "docker"
+                  privileged: true
+                  resourceLimitCpu: "1"
+                  resourceLimitMemory: "768Mi"
+                  resourceRequestCpu: ".05"
+                  resourceRequestMemory: "192Mi"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins"
+                id: "f76c4ea0-0d62-4f1a-9d83-6b0a2c88a5ef"
+                idleMinutes: 15
+                instanceCap: 1
+                label: "build-playwright-stable"
+                name: "playwright"
+                podRetention: "onFailure"
+                slaveConnectTimeout: 600
+                yamlMergeStrategy: "override"
+
   imagePullSecrets:
     - name: regcred
 
