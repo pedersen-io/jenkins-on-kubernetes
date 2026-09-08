@@ -8,7 +8,7 @@ def publishIfMain() {
 
 pipeline {
     agent {
-        label 'build-base-stable'
+        label 'build-jenkins-base'
     }
     options {
         skipDefaultCheckout true

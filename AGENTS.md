@@ -13,7 +13,7 @@ This repository builds and publishes Jenkins agent Docker images for Kubernetes-
 - Preserve the repository's existing pattern for agent folders.
 - Each agent folder should contain a Dockerfile and a Makefile.
 - Every agent Dockerfile should start with `FROM build-jenkins-base` unless there is a clear reason not to.
-- Keep image names consistent with the existing naming scheme: `derekpedersen/build-<language>`.
+- Keep image names consistent with the repo naming scheme: `derekpedersen/build-jenkins-<language>`.
 - Use `GIT_COMMIT_SHA ?= $(shell git rev-parse HEAD)` in every agent Makefile.
 - Keep the standard `build` and `publish-docker` targets in each agent Makefile.
 - Keep changes small and repo-consistent rather than broad refactors.

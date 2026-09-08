@@ -25,17 +25,17 @@ Base image:
 
 Agent images:
 
-- `derekpedersen/build-dotnetcore` ([repo](https://hub.docker.com/r/derekpedersen/build-dotnetcore))
-- `derekpedersen/build-golang` ([repo](https://hub.docker.com/r/derekpedersen/build-golang))
-- `derekpedersen/build-node` ([repo](https://hub.docker.com/r/derekpedersen/build-node))
-- `derekpedersen/build-python` ([repo](https://hub.docker.com/r/derekpedersen/build-python))
-- `derekpedersen/build-rust` ([repo](https://hub.docker.com/r/derekpedersen/build-rust))
-- `derekpedersen/build-c` ([repo](https://hub.docker.com/r/derekpedersen/build-c))
-- `derekpedersen/build-java` ([repo](https://hub.docker.com/r/derekpedersen/build-java))
-- `derekpedersen/build-php` ([repo](https://hub.docker.com/r/derekpedersen/build-php))
-- `derekpedersen/build-ruby` ([repo](https://hub.docker.com/r/derekpedersen/build-ruby))
-- `derekpedersen/build-k8s-tooling` ([repo](https://hub.docker.com/r/derekpedersen/build-k8s-tooling))
-- `derekpedersen/build-playwright` ([repo](https://hub.docker.com/r/derekpedersen/build-playwright))
+- `derekpedersen/build-jenkins-dotnetcore` ([repo](https://hub.docker.com/r/derekpedersen/build-jenkins-dotnetcore))
+- `derekpedersen/build-jenkins-golang` ([repo](https://hub.docker.com/r/derekpedersen/build-jenkins-golang))
+- `derekpedersen/build-jenkins-node` ([repo](https://hub.docker.com/r/derekpedersen/build-jenkins-node))
+- `derekpedersen/build-jenkins-python` ([repo](https://hub.docker.com/r/derekpedersen/build-jenkins-python))
+- `derekpedersen/build-jenkins-rust` ([repo](https://hub.docker.com/r/derekpedersen/build-jenkins-rust))
+- `derekpedersen/build-jenkins-c` ([repo](https://hub.docker.com/r/derekpedersen/build-jenkins-c))
+- `derekpedersen/build-jenkins-java` ([repo](https://hub.docker.com/r/derekpedersen/build-jenkins-java))
+- `derekpedersen/build-jenkins-php` ([repo](https://hub.docker.com/r/derekpedersen/build-jenkins-php))
+- `derekpedersen/build-jenkins-ruby` ([repo](https://hub.docker.com/r/derekpedersen/build-jenkins-ruby))
+- `derekpedersen/build-jenkins-k8s-tooling` ([repo](https://hub.docker.com/r/derekpedersen/build-jenkins-k8s-tooling))
+- `derekpedersen/build-jenkins-playwright` ([repo](https://hub.docker.com/r/derekpedersen/build-jenkins-playwright))
 
 All images are published to Docker Hub with both `latest` and git SHA tags.
 
@@ -122,7 +122,7 @@ Short version:
 
 1. Keep each agent folder consistent with `Dockerfile` + `Makefile`.
 2. Start language-specific agent Dockerfiles from `FROM build-jenkins-base` when appropriate.
-3. Keep image naming aligned with `derekpedersen/build-<language>`.
+3. Keep image naming aligned with `derekpedersen/build-jenkins-<language>`.
 4. Preserve `GIT_COMMIT_SHA ?= $(shell git rev-parse HEAD)` and the standard `build` / `publish-docker` targets.
 5. Update `AGENT_DIRS` in the root `Makefile` whenever a new agent is added.
 6. Validate with a quick repo check such as:
