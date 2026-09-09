@@ -117,5 +117,22 @@ pipeline {
                 }
             }
         }
+        stage('Helm deploy (manual)') {
+            steps {
+                input(
+                    message: 'Deploy the Jenkins Helm chart using the current values.yaml?',
+                    ok: 'Deploy',
+                    parameters: [
+                        booleanParam(
+                            name: 'DEPLOY_HELM',
+                            defaultValue: true,
+                            description: 'Update the Jenkins release with values.yaml'
+                        )
+                    ]
+                )
+                publishIfMain()
+                sh 'make helm-upgrade'
+            }
+        }
     }
 }
