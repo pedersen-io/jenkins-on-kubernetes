@@ -1,5 +1,5 @@
 GIT_COMMIT_SHA ?= $(shell git rev-parse HEAD)
-IMAGE_NAME = derekpedersen/build-php
+IMAGE_NAME = derekpedersen/build-jenkins-php
 
 build:
 	docker build ./ \
