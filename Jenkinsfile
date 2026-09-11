@@ -1,6 +1,14 @@
+def publishIfMain() {
+    if (env.BRANCH_NAME == 'main') {
+        withDockerRegistry([credentialsId: 'docker-jenkins-pat', url: "https://index.docker.io/v1/"]) {
+            sh 'make publish-docker'
+        }
+    }
+}
+
 pipeline {
     agent {
-        label 'build-base-stable'
+        label 'build-jenkins-base'
     }
     options {
         skipDefaultCheckout true
@@ -17,9 +25,7 @@ pipeline {
             steps {
                 dir('/root/workspace/go/src/github.com/derekpedersen/gke-jenkins') {
                     sh 'make build'
-                    withDockerRegistry([credentialsId: 'docker-jenkins-pat', url: "https://index.docker.io/v1/"]) {
-                        sh 'make publish-docker'
-                    }
+                    publishIfMain()
                 }
             }
         }
@@ -27,9 +33,7 @@ pipeline {
             steps {
                 dir('/root/workspace/go/src/github.com/derekpedersen/gke-jenkins/golang') {
                     sh 'make build'
-                    withDockerRegistry([credentialsId: 'docker-jenkins-pat', url: "https://index.docker.io/v1/"]) {
-                        sh 'make publish-docker'
-                    }
+                    publishIfMain()
                 }
             }
         }
@@ -37,9 +41,7 @@ pipeline {
             steps {
                 dir('/root/workspace/go/src/github.com/derekpedersen/gke-jenkins/node') {
                     sh 'make build'
-                    withDockerRegistry([credentialsId: 'docker-jenkins-pat', url: "https://index.docker.io/v1/"]) {
-                        sh 'make publish-docker'
-                    }
+                    publishIfMain()
                 }
             }
         }
@@ -47,9 +49,7 @@ pipeline {
             steps {
                 dir('/root/workspace/go/src/github.com/derekpedersen/gke-jenkins/dotnetcore') {
                     sh 'make build'
-                    withDockerRegistry([credentialsId: 'docker-jenkins-pat', url: "https://index.docker.io/v1/"]) {
-                        sh 'make publish-docker'
-                    }
+                    publishIfMain()
                 }
             }
         }
@@ -57,9 +57,7 @@ pipeline {
             steps {
                 dir('/root/workspace/go/src/github.com/derekpedersen/gke-jenkins/python') {
                     sh 'make build'
-                    withDockerRegistry([credentialsId: 'docker-jenkins-pat', url: "https://index.docker.io/v1/"]) {
-                        sh 'make publish-docker'
-                    }
+                    publishIfMain()
                 }
             }
         }
@@ -67,9 +65,7 @@ pipeline {
             steps {
                 dir('/root/workspace/go/src/github.com/derekpedersen/gke-jenkins/rust') {
                     sh 'make build'
-                    withDockerRegistry([credentialsId: 'docker-jenkins-pat', url: "https://index.docker.io/v1/"]) {
-                        sh 'make publish-docker'
-                    }
+                    publishIfMain()
                 }
             }
         }
@@ -77,9 +73,7 @@ pipeline {
             steps {
                 dir('/root/workspace/go/src/github.com/derekpedersen/gke-jenkins/c') {
                     sh 'make build'
-                    withDockerRegistry([credentialsId: 'docker-jenkins-pat', url: "https://index.docker.io/v1/"]) {
-                        sh 'make publish-docker'
-                    }
+                    publishIfMain()
                 }
             }
         }
@@ -87,9 +81,7 @@ pipeline {
             steps {
                 dir('/root/workspace/go/src/github.com/derekpedersen/gke-jenkins/java') {
                     sh 'make build'
-                    withDockerRegistry([credentialsId: 'docker-jenkins-pat', url: "https://index.docker.io/v1/"]) {
-                        sh 'make publish-docker'
-                    }
+                    publishIfMain()
                 }
             }
         }
@@ -97,9 +89,7 @@ pipeline {
             steps {
                 dir('/root/workspace/go/src/github.com/derekpedersen/gke-jenkins/php') {
                     sh 'make build'
-                    withDockerRegistry([credentialsId: 'docker-jenkins-pat', url: "https://index.docker.io/v1/"]) {
-                        sh 'make publish-docker'
-                    }
+                    publishIfMain()
                 }
             }
         }
@@ -107,9 +97,7 @@ pipeline {
             steps {
                 dir('/root/workspace/go/src/github.com/derekpedersen/gke-jenkins/ruby') {
                     sh 'make build'
-                    withDockerRegistry([credentialsId: 'docker-jenkins-pat', url: "https://index.docker.io/v1/"]) {
-                        sh 'make publish-docker'
-                    }
+                    publishIfMain()
                 }
             }
         }
@@ -117,9 +105,7 @@ pipeline {
             steps {
                 dir('/root/workspace/go/src/github.com/derekpedersen/gke-jenkins/k8s-tooling') {
                     sh 'make build'
-                    withDockerRegistry([credentialsId: 'docker-jenkins-pat', url: "https://index.docker.io/v1/"]) {
-                        sh 'make publish-docker'
-                    }
+                    publishIfMain()
                 }
             }
         }
@@ -127,10 +113,25 @@ pipeline {
             steps {
                 dir('/root/workspace/go/src/github.com/derekpedersen/gke-jenkins/playwright') {
                     sh 'make build'
-                    withDockerRegistry([credentialsId: 'docker-jenkins-pat', url: "https://index.docker.io/v1/"]) {
-                        sh 'make publish-docker'
-                    }
+                    publishIfMain()
                 }
+            }
+        }
+        stage('Helm deploy (manual)') {
+            steps {
+                input(
+                    message: 'Deploy the Jenkins Helm chart using the current values.yaml?',
+                    ok: 'Deploy',
+                    parameters: [
+                        booleanParam(
+                            name: 'DEPLOY_HELM',
+                            defaultValue: true,
+                            description: 'Update the Jenkins release with values.yaml'
+                        )
+                    ]
+                )
+                publishIfMain()
+                sh 'make helm-upgrade'
             }
         }
     }

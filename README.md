@@ -6,11 +6,11 @@ Project website: https://jenksin.pedersen.io
 
 ## Why this project exists
 
-I have spent years building CI/CD systems in Bamboo, GitLab CI, and GitHub Actions. This Jenkins setup gives me a free, open ecosystem where I can self-host, keep learning by shipping, and iterate quickly.~
+I have spent years designing and operating CI/CD systems across Bamboo, GitLab CI, GitHub Actions, and similar platforms. This Jenkins setup gives me a free, open ecosystem to self-host, keep learning, and ship improvements quickly.
 
-I run it on my Kubernetes cluster so I can test architecture and workflow patterns end to end: image design, agent behavior, pipeline flow, and day-2 operations.
+I run it on my Kubernetes cluster to test architecture and workflow patterns end to end: image design, agent behavior, pipeline flow, and day-2 operations.
 
-- CI architecture that is simple to reason about and easy to operate
+- Straightforward CI architecture that is easy to reason about and operate
 - Reproducible image builds and release workflows
 - Kubernetes-native Jenkins agent patterns
 - Practical tradeoffs between speed, reliability, and security
@@ -25,17 +25,17 @@ Base image:
 
 Agent images:
 
-- `derekpedersen/build-dotnetcore` ([repo](https://hub.docker.com/r/derekpedersen/build-dotnetcore))
-- `derekpedersen/build-golang` ([repo](https://hub.docker.com/r/derekpedersen/build-golang))
-- `derekpedersen/build-node` ([repo](https://hub.docker.com/r/derekpedersen/build-node))
-- `derekpedersen/build-python` ([repo](https://hub.docker.com/r/derekpedersen/build-python))
-- `derekpedersen/build-rust` ([repo](https://hub.docker.com/r/derekpedersen/build-rust))
-- `derekpedersen/build-c` ([repo](https://hub.docker.com/r/derekpedersen/build-c))
-- `derekpedersen/build-java` ([repo](https://hub.docker.com/r/derekpedersen/build-java))
-- `derekpedersen/build-php` ([repo](https://hub.docker.com/r/derekpedersen/build-php))
-- `derekpedersen/build-ruby` ([repo](https://hub.docker.com/r/derekpedersen/build-ruby))
-- `derekpedersen/build-k8s-tooling` ([repo](https://hub.docker.com/r/derekpedersen/build-k8s-tooling))
-- `derekpedersen/build-playwright` ([repo](https://hub.docker.com/r/derekpedersen/build-playwright))
+- `derekpedersen/build-jenkins-dotnetcore` ([repo](https://hub.docker.com/r/derekpedersen/build-jenkins-dotnetcore))
+- `derekpedersen/build-jenkins-golang` ([repo](https://hub.docker.com/r/derekpedersen/build-jenkins-golang))
+- `derekpedersen/build-jenkins-node` ([repo](https://hub.docker.com/r/derekpedersen/build-jenkins-node))
+- `derekpedersen/build-jenkins-python` ([repo](https://hub.docker.com/r/derekpedersen/build-jenkins-python))
+- `derekpedersen/build-jenkins-rust` ([repo](https://hub.docker.com/r/derekpedersen/build-jenkins-rust))
+- `derekpedersen/build-jenkins-c` ([repo](https://hub.docker.com/r/derekpedersen/build-jenkins-c))
+- `derekpedersen/build-jenkins-java` ([repo](https://hub.docker.com/r/derekpedersen/build-jenkins-java))
+- `derekpedersen/build-jenkins-php` ([repo](https://hub.docker.com/r/derekpedersen/build-jenkins-php))
+- `derekpedersen/build-jenkins-ruby` ([repo](https://hub.docker.com/r/derekpedersen/build-jenkins-ruby))
+- `derekpedersen/build-jenkins-k8s-tooling` ([repo](https://hub.docker.com/r/derekpedersen/build-jenkins-k8s-tooling))
+- `derekpedersen/build-jenkins-playwright` ([repo](https://hub.docker.com/r/derekpedersen/build-jenkins-playwright))
 
 All images are published to Docker Hub with both `latest` and git SHA tags.
 
@@ -112,41 +112,27 @@ Get admin password:
 kubectl -n jenkins get secret jenkins -o jsonpath='{.data.jenkins-admin-password}' | base64 --decode
 ```
 
-## AI agent runbook
+## AI agent guidance
 
-If you are an AI coding/build agent modifying this repo, follow these rules:
+This repository’s canonical AI-agent instructions live in the root `AGENTS.md` file. That file is the source of truth for external AI coding and build agents.
 
-1. Keep each agent folder structure consistent: `Dockerfile` + `Makefile`.
-2. Start language agent Dockerfiles from `FROM build-jenkins-base` unless there is a clear reason not to.
-3. Keep image naming consistent: `derekpedersen/build-<language>`.
-4. Keep `GIT_COMMIT_SHA ?= $(shell git rev-parse HEAD)` in every agent Makefile.
-5. Keep `build` and `publish-docker` targets in every agent Makefile.
-6. When adding a new agent, update `AGENT_DIRS` in the root `Makefile`.
-7. Prefer minimal, targeted changes over broad refactors.
-8. Validate with at least:
+If there is any mismatch between the README and `AGENTS.md`, follow `AGENTS.md`.
 
-```bash
-grep -n 'AGENT_DIRS' Makefile
-make -n build-agents
-```
+Short version:
 
-Definition of done for agent changes:
-
-- Builds complete locally for affected images.
-- Naming conventions and target conventions are preserved.
-- README and deployment notes stay aligned with Docker Hub usage.
-
-Keeping image options in sync:
-
-1. Treat AGENT_DIRS in the root Makefile as the build source of truth.
-2. Keep this README image list aligned with AGENT_DIRS and agent folders in the repo.
-3. Keep Jenkinsfile stages aligned with AGENT_DIRS so CI publishes every listed image.
-4. Quick validation before merge:
+1. Keep each agent folder consistent with `Dockerfile` + `Makefile`.
+2. Start language-specific agent Dockerfiles from `FROM build-jenkins-base` when appropriate.
+3. Keep image naming aligned with `derekpedersen/build-jenkins-<language>`.
+4. Preserve `GIT_COMMIT_SHA ?= $(shell git rev-parse HEAD)` and the standard `build` / `publish-docker` targets.
+5. Update `AGENT_DIRS` in the root `Makefile` whenever a new agent is added.
+6. Validate with a quick repo check such as:
 
 ```bash
 grep -n 'AGENT_DIRS' Makefile
 ls -1
 ```
+
+The root `AGENT_DIRS` value and the agent folders in this repo remain the build metadata source of truth.
 
 ## Architecture notes and tradeoffs
 
