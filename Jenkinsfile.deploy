@@ -1,0 +1,49 @@
+pipeline {
+    agent {
+        label 'build-jenkins-base'
+    }
+
+    parameters {
+        string(
+            name: 'HELM_RELEASE',
+            defaultValue: 'jenkins',
+            description: 'Helm release name to upgrade'
+        )
+        string(
+            name: 'HELM_NAMESPACE',
+            defaultValue: 'jenkins',
+            description: 'Kubernetes namespace for the Jenkins release'
+        )
+        string(
+            name: 'HELM_VALUES',
+            defaultValue: 'values.yaml',
+            description: 'Values file to use for the Helm upgrade'
+        )
+    }
+
+    stages {
+        stage('Guard: main branch only') {
+            steps {
+                script {
+                    if (env.BRANCH_NAME != 'main') {
+                        error('Helm deploy jobs are restricted to the main branch only.')
+                    }
+                }
+            }
+        }
+
+        stage('Checkout') {
+            steps {
+                dir('/root/workspace/go/src/github.com/derekpedersen/gke-jenkins') {
+                    checkout scm
+                }
+            }
+        }
+
+        stage('Helm deploy') {
+            steps {
+                sh 'make helm-upgrade HELM_RELEASE=${HELM_RELEASE} HELM_NAMESPACE=${HELM_NAMESPACE} HELM_VALUES=${HELM_VALUES}'
+            }
+        }
+    }
+}

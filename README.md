@@ -83,6 +83,15 @@ Publish base image only:
 make publish-docker
 ```
 
+## Jenkins pipeline workflow
+
+This repo keeps CI and deployment as separate concerns:
+
+- The main pipeline in [Jenkinsfile](Jenkinsfile) focuses on building the base image and language-specific agent images, then publishing Docker images on the `main` branch.
+- The manual deploy pipeline in [Jenkinsfile.deploy](Jenkinsfile.deploy) is for Helm upgrades only. It can be run on demand at any time, even days after the images were pushed, which is useful for redeploying the same release or rolling config changes without re-running the image pipeline.
+- The deploy job is intentionally restricted to the `main` branch so that Helm upgrades cannot be triggered from feature branches or other refs.
+- The deploy job runs the existing Helm target from [Makefile](Makefile#L41-L44): `make helm-upgrade`.
+
 ## Deploy Jenkins on Kubernetes
 
 Create namespace:
