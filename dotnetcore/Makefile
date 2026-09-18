@@ -1,5 +1,5 @@
 GIT_COMMIT_SHA ?= $(shell git rev-parse HEAD)
-IMAGE_NAME = derekpedersen/build-dotnetcore
+IMAGE_NAME = derekpedersen/build-jenkins-dotnetcore
 
 build:
 	docker build --no-cache ./ \
