@@ -109,11 +109,13 @@ kubectl -n jenkins create secret docker-registry regcred \
   --docker-email=<EMAIL>
 ```
 
-Install or upgrade Jenkins:
+Install or upgrade Jenkins with both the base Helm values and the separate CasC file:
 
 ```bash
 make helm-upgrade-init
 ```
+
+The repo keeps deployment defaults in [values.yaml](values.yaml) and Jenkins configuration-as-code in [jenkins-casc.yaml](jenkins-casc.yaml). Helm merges them automatically with `-f values.yaml -f jenkins-casc.yaml`.
 
 If using GitHub OAuth via JCasC, create the OAuth secret before running Helm upgrade so Jenkins has credentials at startup:
 
@@ -129,7 +131,7 @@ Apply order for auth changes:
 1. Create or update the `jenkins-github-oauth` secret.
 2. Run `make helm-upgrade-init`.
 
-If auth is misconfigured and you are locked out, fix values in this repo and re-run Helm upgrade to reapply JCasC.
+If auth is misconfigured and you are locked out, fix the config in [values.yaml](values.yaml) and/or [jenkins-casc.yaml](jenkins-casc.yaml), then re-run Helm upgrade to reapply JCasC.
 
 Get admin password:
 

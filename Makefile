@@ -7,6 +7,7 @@ HELM_RELEASE ?= jenkins
 HELM_NAMESPACE ?= jenkins
 HELM_CHART ?= jenkins/jenkins
 HELM_VALUES ?= values.yaml
+HELM_CASC_VALUES ?= jenkins-casc.yaml
 HELM_REPO_NAME ?= jenkins
 HELM_REPO_URL ?= https://charts.jenkins.io
 
@@ -39,6 +40,6 @@ helm-repo-init:
 	helm repo update
 
 helm-upgrade: helm-repo-init
-	helm upgrade --install $(HELM_RELEASE) $(HELM_CHART) -n $(HELM_NAMESPACE) -f $(HELM_VALUES)
+	helm upgrade --install $(HELM_RELEASE) $(HELM_CHART) -n $(HELM_NAMESPACE) -f $(HELM_VALUES) -f $(HELM_CASC_VALUES)
 
 helm-upgrade-init: helm-upgrade
