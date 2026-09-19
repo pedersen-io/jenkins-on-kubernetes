@@ -80,7 +80,10 @@ controller:
           authorizationStrategy:
             projectMatrix:
               permissions:
-              - "Overall/Administer:derekpedersen"
+                - "Overall/Administer:derekpedersen"
+                - "Overall/Read:authenticated"
+                - "Job/Read:authenticated"
+                - "View/Read:authenticated"
           clouds:
           - kubernetes:
               name: "kubernetes"
