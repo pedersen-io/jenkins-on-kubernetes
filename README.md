@@ -115,6 +115,22 @@ Install or upgrade Jenkins:
 make helm-upgrade-init
 ```
 
+If using GitHub OAuth via JCasC, create the OAuth secret before running Helm upgrade so Jenkins has credentials at startup:
+
+```bash
+kubectl -n jenkins create secret generic jenkins-github-oauth \
+  --from-literal=client-id=<GITHUB_OAUTH_CLIENT_ID> \
+  --from-literal=client-secret=<GITHUB_OAUTH_CLIENT_SECRET> \
+  --dry-run=client -o yaml | kubectl apply -f -
+```
+
+Apply order for auth changes:
+
+1. Create or update the `jenkins-github-oauth` secret.
+2. Run `make helm-upgrade-init`.
+
+If auth is misconfigured and you are locked out, fix values in this repo and re-run Helm upgrade to reapply JCasC.
+
 Get admin password:
 
 ```bash
