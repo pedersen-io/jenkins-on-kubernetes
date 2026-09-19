@@ -127,7 +127,7 @@ controller:
                 id: "e4a18b6c-8e74-498c-adad-53d145c92728"
                 idleMinutes: 15
                 instanceCap: 1
-                label: "build-jenkins-golang || build-golang"
+                label: "build-jenkins-golang || build-golang || build-golang-stable"
                 name: "golang"
                 nodeUsageMode: "NORMAL"
                 podRetention: "onFailure"
@@ -173,7 +173,7 @@ controller:
                 id: "6170664b-ab08-46ae-a41d-a2721b714a12"
                 idleMinutes: 15
                 instanceCap: 1
-                label: "build-jenkins-node || build-node"
+                label: "build-jenkins-node || build-node || build-node-stable"
                 name: "node"
                 podRetention: "onFailure"
                 slaveConnectTimeout: 600
@@ -217,7 +217,7 @@ controller:
                 id: "02b8986f-3c2b-46a9-9b2a-00ba2e83cc4e"
                 idleMinutes: 15
                 instanceCap: 1
-                label: "build-jenkins-base || build-base"
+                label: "build-jenkins-base || build-base || build-base-stable"
                 name: "jenkins"
                 podRetention: "onFailure"
                 slaveConnectTimeout: 600
@@ -261,7 +261,7 @@ controller:
                 id: "6170664b-ab08-46ae-a41d-a2721b714a12"
                 idleMinutes: 15
                 instanceCap: 1
-                label: "build-jenkins-dotnetcore || build-dotnetcore"
+                label: "build-jenkins-dotnetcore || build-dotnetcore || build-dotnetcore-stable"
                 name: "dotnetcore"
                 podRetention: "onFailure"
                 slaveConnectTimeout: 600
@@ -305,7 +305,7 @@ controller:
                 id: "7d3a66a7-9f0e-4d80-b582-7f9d87a8e0a1"
                 idleMinutes: 15
                 instanceCap: 1
-                label: "build-jenkins-python || build-python"
+                label: "build-jenkins-python || build-python || build-python-stable"
                 name: "python"
                 podRetention: "onFailure"
                 slaveConnectTimeout: 600
@@ -349,7 +349,7 @@ controller:
                 id: "d469d9c0-dfc9-4d97-b6e7-aef0d7cf6d4b"
                 idleMinutes: 15
                 instanceCap: 1
-                label: "build-jenkins-rust || build-rust"
+                label: "build-jenkins-rust || build-rust || build-rust-stable"
                 name: "rust"
                 podRetention: "onFailure"
                 slaveConnectTimeout: 600
@@ -393,7 +393,7 @@ controller:
                 id: "8a8b3838-8d97-46cc-9b50-72e7316c8964"
                 idleMinutes: 15
                 instanceCap: 1
-                label: "build-jenkins-c || build-c"
+                label: "build-jenkins-c || build-c || build-c-stable"
                 name: "c"
                 podRetention: "onFailure"
                 slaveConnectTimeout: 600
@@ -437,7 +437,7 @@ controller:
                 id: "b7b147ec-0f49-49a0-a6fd-d02153f4290f"
                 idleMinutes: 15
                 instanceCap: 1
-                label: "build-jenkins-java || build-java"
+                label: "build-jenkins-java || build-java || build-java-stable"
                 name: "java"
                 podRetention: "onFailure"
                 slaveConnectTimeout: 600
@@ -481,7 +481,7 @@ controller:
                 id: "b10036f5-f057-4f65-9f8d-d9400c2c895a"
                 idleMinutes: 15
                 instanceCap: 1
-                label: "build-jenkins-php || build-php"
+                label: "build-jenkins-php || build-php || build-php-stable"
                 name: "php"
                 podRetention: "onFailure"
                 slaveConnectTimeout: 600
@@ -525,7 +525,7 @@ controller:
                 id: "f0b12d7e-f7ca-4816-a9d4-5cab7c620304"
                 idleMinutes: 15
                 instanceCap: 1
-                label: "build-jenkins-ruby || build-ruby"
+                label: "build-jenkins-ruby || build-ruby || build-ruby-stable"
                 name: "ruby"
                 podRetention: "onFailure"
                 slaveConnectTimeout: 600
@@ -569,7 +569,7 @@ controller:
                 id: "f6dc7e4a-9246-48ec-8b2b-7221f8903001"
                 idleMinutes: 15
                 instanceCap: 1
-                label: "build-jenkins-k8s-tooling || build-k8s-tooling"
+                label: "build-jenkins-k8s-tooling || build-k8s-tooling || build-k8s-tooling-stable"
                 name: "k8s-tooling"
                 podRetention: "onFailure"
                 slaveConnectTimeout: 600
@@ -613,7 +613,7 @@ controller:
                 id: "f76c4ea0-0d62-4f1a-9d83-6b0a2c88a5ef"
                 idleMinutes: 15
                 instanceCap: 1
-                label: "build-jenkins-playwright || build-playwright"
+                label: "build-jenkins-playwright || build-playwright || build-playwright-stable"
                 name: "playwright"
                 podRetention: "onFailure"
                 slaveConnectTimeout: 600
