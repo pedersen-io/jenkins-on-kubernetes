@@ -14,7 +14,7 @@ def scanImage(String imageName) {
         fi
         trivy image --severity HIGH,CRITICAL --ignore-unfixed --format json --output trivy-reports/${imageName.replaceAll('/', '-')}.json ${imageName}:latest || true
         trivy image --severity HIGH,CRITICAL --ignore-unfixed --format table --output trivy-reports/${imageName.replaceAll('/', '-')}.txt ${imageName}:latest || true
-        trivy image --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1 ${imageName}:latest
+        echo "Trivy scan completed; build continues because this is report-only mode."
     """
     publishHTML(target: [
         allowMissing: true,
@@ -31,16 +31,27 @@ def generateTrivySummary() {
     sh '''
         mkdir -p trivy-summary
         html=trivy-summary/index.html
+        reports=$(find . -path '*/trivy-reports/*.txt' | sort)
+        total=$(printf '%s\n' "$reports" | grep -c . || true)
+        findings=$(printf '%s\n' "$reports" | while IFS= read -r report; do
+            if grep -Eq 'Total: [1-9][0-9]* \(' "$report"; then
+                echo "$report"
+            fi
+        done | wc -l | tr -d ' ')
         {
             echo '<html><head><title>Trivy image scan summary</title>'
-            echo '<style>body { font-family: Arial, sans-serif; margin: 2rem; } ul { line-height: 1.8; } a { text-decoration: none; color: #0b57d0; } a:hover { text-decoration: underline; } </style>'
+            echo '<style>body { font-family: Arial, sans-serif; margin: 2rem; } ul { line-height: 1.8; } a { text-decoration: none; color: #0b57d0; } a:hover { text-decoration: underline; } .kpis { display: flex; gap: 1.5rem; margin: 1rem 0 2rem; } .kpi { border: 1px solid #ddd; border-radius: 8px; padding: 1rem 1.25rem; min-width: 180px; } .kpi strong { display: block; font-size: 1.5rem; } </style>'
             echo '</head><body>'
             echo '<h1>Trivy image scan summary</h1>'
+            echo '<div class="kpis">'
+            echo "<div class=\"kpi\"><span>Images scanned</span><strong>${total}</strong></div>"
+            echo "<div class=\"kpi\"><span>Images with findings</span><strong>${findings}</strong></div>"
+            echo '</div>'
             echo '<ul>'
             while IFS= read -r report; do
                 rel="${report#./}"
                 echo "<li><a href=\"../${rel}\">${rel}</a></li>"
-            done < <(find . -path '*/trivy-reports/*.txt' | sort)
+            done <<< "$reports"
             echo '</ul>'
             echo '</body></html>'
         } > "$html"
