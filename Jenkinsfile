@@ -16,14 +16,6 @@ def scanImage(String imageName) {
         trivy image --severity HIGH,CRITICAL --ignore-unfixed --format table --output trivy-reports/${imageName.replaceAll('/', '-')}.txt ${imageName}:latest || true
         echo "Trivy scan completed; build continues because this is report-only mode."
     """
-    publishHTML(target: [
-        allowMissing: true,
-        alwaysLinkToLastBuild: true,
-        keepAll: true,
-        reportDir: 'trivy-reports',
-        reportFiles: "${imageName.replaceAll('/', '-')}.txt",
-        reportName: "Trivy scan - ${imageName.replaceAll('/', '-')}",
-        reportTitles: "Trivy scan - ${imageName.replaceAll('/', '-')}"])
     archiveArtifacts artifacts: 'trivy-reports/*.json, trivy-reports/*.txt', fingerprint: true
 }
 
@@ -56,14 +48,6 @@ def generateTrivySummary() {
             echo '</body></html>'
         } > "$html"
     '''
-    publishHTML(target: [
-        allowMissing: true,
-        alwaysLinkToLastBuild: true,
-        keepAll: true,
-        reportDir: 'trivy-summary',
-        reportFiles: 'index.html',
-        reportName: 'Trivy scan summary',
-        reportTitles: 'Trivy scan summary'])
     archiveArtifacts artifacts: 'trivy-summary/index.html', fingerprint: true
 }
 
