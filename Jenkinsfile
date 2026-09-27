@@ -26,8 +26,9 @@ def generateTrivySummary() {
         reports=$(find . -path '*/trivy-reports/*.txt' | sort)
         total=$(printf '%s\n' "$reports" | grep -c . || true)
         findings=$(printf '%s\n' "$reports" | while IFS= read -r report; do
+            [ -n "$report" ] || continue
             if grep -Eq 'Total: [1-9][0-9]* [(]' "$report"; then
-                echo "$report"
+                printf '%s\n' "$report"
             fi
         done | wc -l | tr -d ' ')
         {
@@ -40,10 +41,11 @@ def generateTrivySummary() {
             echo "<div class=\"kpi\"><span>Images with findings</span><strong>${findings}</strong></div>"
             echo '</div>'
             echo '<ul>'
-            while IFS= read -r report; do
+            printf '%s\n' "$reports" | while IFS= read -r report; do
+                [ -n "$report" ] || continue
                 rel="${report#./}"
                 echo "<li><a href=\"../${rel}\">${rel}</a></li>"
-            done <<< "$reports"
+            done
             echo '</ul>'
             echo '</body></html>'
         } > "$html"
