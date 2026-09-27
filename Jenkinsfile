@@ -34,7 +34,7 @@ def generateTrivySummary() {
         reports=$(find . -path '*/trivy-reports/*.txt' | sort)
         total=$(printf '%s\n' "$reports" | grep -c . || true)
         findings=$(printf '%s\n' "$reports" | while IFS= read -r report; do
-            if grep -Eq 'Total: [1-9][0-9]* \(' "$report"; then
+            if grep -Eq 'Total: [1-9][0-9]* [(]' "$report"; then
                 echo "$report"
             fi
         done | wc -l | tr -d ' ')
