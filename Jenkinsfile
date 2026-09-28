@@ -7,50 +7,13 @@ def publishIfMain() {
 }
 
 def scanImage(String imageName) {
-    sh """
-        mkdir -p trivy-reports
-        if ! command -v trivy >/dev/null 2>&1; then
-            curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
-        fi
-        trivy image --severity HIGH,CRITICAL --ignore-unfixed --format json --output trivy-reports/${imageName.replaceAll('/', '-')}.json ${imageName}:latest || true
-        trivy image --severity HIGH,CRITICAL --ignore-unfixed --format table --output trivy-reports/${imageName.replaceAll('/', '-')}.txt ${imageName}:latest || true
-        echo "Trivy scan completed; build continues because this is report-only mode."
-    """
+    sh "make scan-image IMAGE_NAME='${imageName}'"
     archiveArtifacts artifacts: 'trivy-reports/*.json, trivy-reports/*.txt', fingerprint: true
 }
 
 def generateTrivySummary() {
-    sh '''
-        mkdir -p trivy-summary
-        html=trivy-summary/index.html
-        reports=$(find . -path '*/trivy-reports/*.txt' | sort)
-        total=$(printf '%s\n' "$reports" | grep -c . || true)
-        findings=$(printf '%s\n' "$reports" | while IFS= read -r report; do
-            [ -n "$report" ] || continue
-            if grep -Eq 'Total: [1-9][0-9]* [(]' "$report"; then
-                printf '%s\n' "$report"
-            fi
-        done | wc -l | tr -d ' ')
-        {
-            echo '<html><head><title>Trivy image scan summary</title>'
-            echo '<style>body { font-family: Arial, sans-serif; margin: 2rem; } ul { line-height: 1.8; } a { text-decoration: none; color: #0b57d0; } a:hover { text-decoration: underline; } .kpis { display: flex; gap: 1.5rem; margin: 1rem 0 2rem; } .kpi { border: 1px solid #ddd; border-radius: 8px; padding: 1rem 1.25rem; min-width: 180px; } .kpi strong { display: block; font-size: 1.5rem; } </style>'
-            echo '</head><body>'
-            echo '<h1>Trivy image scan summary</h1>'
-            echo '<div class="kpis">'
-            echo "<div class=\"kpi\"><span>Images scanned</span><strong>${total}</strong></div>"
-            echo "<div class=\"kpi\"><span>Images with findings</span><strong>${findings}</strong></div>"
-            echo '</div>'
-            echo '<ul>'
-            printf '%s\n' "$reports" | while IFS= read -r report; do
-                [ -n "$report" ] || continue
-                rel="${report#./}"
-                echo "<li><a href=\"../${rel}\">${rel}</a></li>"
-            done
-            echo '</ul>'
-            echo '</body></html>'
-        } > "$html"
-    '''
-    archiveArtifacts artifacts: 'trivy-summary/index.html', fingerprint: true
+    sh 'make trivy-summary'
+    archiveArtifacts artifacts: 'trivy-summary/*.html, trivy-summary/*.md', fingerprint: true
 }
 
 pipeline {
