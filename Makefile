@@ -11,6 +11,8 @@ HELM_CASC_VALUES ?= jenkins-casc.yaml
 HELM_REPO_NAME ?= jenkins
 HELM_REPO_URL ?= https://charts.jenkins.io
 
+.PHONY: build publish-docker build-agents publish-agents build-publish-all scan-image trivy-summary helm-repo-init helm-upgrade helm-upgrade-init
+
 build:
 	docker build ./ \
 		-t $(BASE_IMAGE_LATEST) \
