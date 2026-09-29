@@ -14,4 +14,4 @@ scan-image:
 		echo "Usage: make scan-image IMAGE_NAME=<image>"; \
 		exit 1; \
 	fi
-	@bash ../scan-image.sh "$(IMAGE_NAME)"
+	@bash ../.trivy/scan-image.sh "$(IMAGE_NAME)"
