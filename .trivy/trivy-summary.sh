@@ -140,6 +140,15 @@ HTML
             title: (.Title // "Unknown vulnerability"),
             fixed: (.FixedVersion // "-")
             }]
+            | sort_by(
+                if .severity == "CRITICAL" then 0
+                elif .severity == "HIGH" then 1
+                elif .severity == "MEDIUM" then 2
+                elif .severity == "LOW" then 3
+                else 4 end,
+                .package,
+                .title
+              )
             | .[:10]
             | .[]
             | [.package, .severity, .title, .fixed]
@@ -338,6 +347,9 @@ for json_path in json_reports:
                 'fixed': str(vuln.get('FixedVersion', '-')),
                 'url': str(vuln.get('PrimaryURL', '')),
             })
+
+          severity_rank = {'CRITICAL': 0, 'HIGH': 1, 'MEDIUM': 2, 'LOW': 3, 'UNKNOWN': 4}
+          details.sort(key=lambda entry: (severity_rank.get(entry['severity'], 4), entry['package'], entry['title']))
 
     total = sum(sev_counts.values())
     findings = total > 0
