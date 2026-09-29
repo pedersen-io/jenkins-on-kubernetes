@@ -41,10 +41,10 @@ scan-image:
 		echo "Usage: make scan-image IMAGE_NAME=<image>"; \
 		exit 1; \
 	fi
-	@bash ./scan-image.sh "$(IMAGE_NAME)"
+	@bash ./.trivy/scan-image.sh "$(IMAGE_NAME)"
 
 trivy-summary:
-	@bash ./trivy-summary.sh
+	@bash ./.trivy/trivy-summary.sh
 
 helm-repo-init:
 	helm repo add $(HELM_REPO_NAME) $(HELM_REPO_URL) || true

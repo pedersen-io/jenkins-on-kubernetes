@@ -83,6 +83,17 @@ Publish base image only:
 make publish-docker
 ```
 
+## Trivy outputs
+
+Trivy helpers and generated artifacts now live under `.trivy/`:
+
+- Script: `.trivy/scan-image.sh`
+- Script: `.trivy/trivy-summary.sh`
+- Raw scan reports: `.trivy/reports/`
+- Rendered summary artifacts: `.trivy/summary/`
+
+The Jenkins pipeline archives report artifacts from `.trivy/reports/*.json`, `.trivy/reports/*.txt`, `.trivy/summary/*.html`, and `.trivy/summary/*.md`.
+
 ## Jenkins pipeline workflow
 
 This repo keeps CI and deployment as separate concerns:

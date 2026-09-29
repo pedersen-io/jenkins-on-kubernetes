@@ -8,12 +8,12 @@ def publishIfMain() {
 
 def scanImage(String imageName) {
     sh "make scan-image IMAGE_NAME='${imageName}'"
-    archiveArtifacts artifacts: 'trivy-reports/*.json, trivy-reports/*.txt', fingerprint: true
+    archiveArtifacts artifacts: '.trivy/reports/*.json, .trivy/reports/*.txt', fingerprint: true
 }
 
 def generateTrivySummary() {
     sh 'make trivy-summary'
-    archiveArtifacts artifacts: 'trivy-summary/*.html, trivy-summary/*.md', fingerprint: true
+    archiveArtifacts artifacts: '.trivy/summary/*.html, .trivy/summary/*.md', fingerprint: true
 }
 
 pipeline {

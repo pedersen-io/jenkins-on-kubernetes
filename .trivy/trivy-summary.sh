@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -eu
 
-mkdir -p trivy-summary
+mkdir -p .trivy/reports .trivy/summary
 
 PYTHON_BIN=""
 if command -v python3 >/dev/null 2>&1; then
@@ -12,15 +12,15 @@ fi
 
 if [ -z "$PYTHON_BIN" ]; then
   if ! command -v jq >/dev/null 2>&1; then
-    cat > trivy-summary/summary.md <<'MD'
+    cat > .trivy/summary/summary.md <<'MD'
 # Trivy image scan summary
 
 Summary generation skipped because neither Python nor jq is available in this build agent.
 
-Raw Trivy reports are still archived under `trivy-reports/`.
+  Raw Trivy reports are still archived under `.trivy/reports/`.
 MD
 
-    cat > trivy-summary/index.html <<'HTML'
+    cat > .trivy/summary/index.html <<'HTML'
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -35,7 +35,7 @@ MD
   <h1>Trivy image scan summary</h1>
   <div class="notice">
   Summary generation skipped because neither <code>python3</code>/<code>python</code> nor <code>jq</code> is available in this build agent.<br />
-  Raw Trivy reports are still archived under <code>trivy-reports/</code>.
+  Raw Trivy reports are still archived under <code>.trivy/reports/</code>.
   </div>
 </body>
 </html>
@@ -55,8 +55,10 @@ HTML
   while IFS= read -r json_path; do
     rel_json="${json_path#./}"
     image_name="$(basename "${rel_json%.json}")"
-    report_txt="${rel_json%.json}.txt"
-    if [ ! -f "$report_txt" ]; then
+    report_txt_path="${rel_json%.json}.txt"
+    report_name="$(basename "$report_txt_path")"
+    report_txt="reports/$report_name"
+    if [ ! -f "$report_txt_path" ]; then
       report_txt=""
     fi
 
@@ -71,7 +73,7 @@ HTML
     fi
 
     printf '%s\t%s\t%s\t%s\t%s\t%s\n' "$image_name" "$high" "$critical" "$total" "$report_txt" "$rel_json" >> "$rows_file"
-  done < <(find . -type f -path '*/trivy-reports/*.json' | sort)
+  done < <(find . -type f -path './.trivy/reports/*.json' | sort)
 
   sorted_rows="$(mktemp)"
   trap 'rm -f "$rows_file" "$sorted_rows"' EXIT
@@ -149,7 +151,7 @@ HTML
       fi
       echo
     done < "$sorted_rows"
-  } > trivy-summary/summary.md
+  } > .trivy/summary/summary.md
 
   if [ "$critical_total" -gt 0 ]; then
     banner_class='banner-critical'
@@ -287,7 +289,7 @@ HTML_HEAD
 </body>
 </html>
 HTML_FOOT
-  } > trivy-summary/index.html
+  } > .trivy/summary/index.html
 
   echo "Trivy summary generated with jq fallback (Python unavailable)."
   exit 0
@@ -299,13 +301,13 @@ from pathlib import Path
 from html import escape
 
 root = Path('.')
-json_reports = sorted(root.glob('**/trivy-reports/*.json'))
+json_reports = sorted(root.glob('.trivy/reports/*.json'))
 summary_rows = []
 markdown_sections = []
 
 for json_path in json_reports:
     txt_path = json_path.with_suffix('.txt')
-    rel_txt = txt_path.as_posix() if txt_path.exists() else ''
+    rel_txt = f"reports/{txt_path.name}" if txt_path.exists() else ''
     image_name = json_path.name.replace('.json', '')
 
     try:
@@ -358,7 +360,7 @@ for json_path in json_reports:
             markdown_sections.append(f"| {entry['package']} | {entry['severity']} | {entry['title']} | {entry['fixed']} |")
         markdown_sections.append('')
 
-summary_md = Path('trivy-summary/summary.md')
+summary_md = Path('.trivy/summary/summary.md')
 summary_md.parent.mkdir(exist_ok=True)
 summary_rows.sort(key=lambda row: (row['critical'], row['high'], row['total']), reverse=True)
 
@@ -374,7 +376,7 @@ lines = [
     '| --- | ---: | ---: | ---: | --- |',
 ]
 for row in summary_rows:
-    report_cell = f"[txt]({row['report']})" if row['report'] else 'n/a'
+    report_cell = f"[txt](../{row['report']})" if row['report'] else 'n/a'
     lines.append(f"| {row['image']} | {row['high']} | {row['critical']} | {row['total']} | {report_cell} |")
 lines.extend(['', *markdown_sections])
 summary_md.write_text('\n'.join(lines) + '\n', encoding='utf-8')
@@ -461,5 +463,5 @@ html = f'''<!DOCTYPE html>
 </body>
 </html>
 '''
-Path('trivy-summary/index.html').write_text(html, encoding='utf-8')
+Path('.trivy/summary/index.html').write_text(html, encoding='utf-8')
 PY
