@@ -1,6 +1,6 @@
 def publishIfMain() {
     if (env.BRANCH_NAME == 'main') {
-        withDockerRegistry([credentialsId: 'docker-jenkins-pat', url: "https://index.docker.io/v1/"]) {
+        withDockerRegistry([credentialsId: 'docker-pat', url: "https://index.docker.io/v1/"]) {
             sh 'make publish-docker'
         }
     }
