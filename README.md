@@ -1,25 +1,20 @@
 # Jenkins on Kubernetes
 
-Production-minded Jenkins controller and agent image pipeline for Kubernetes-based CI.
+Production-oriented Jenkins CI/CD for Kubernetes.
 
-Project website: https://jenksin.pedersen.io
+[Project website](https://jenksin.pedersen.io)
 
-## Why this project exists
+## Project overview
 
-I have spent years designing and operating CI/CD systems across Bamboo, GitLab CI, GitHub Actions, and similar platforms. This Jenkins setup gives me a free, open ecosystem to self-host, keep learning, and ship improvements quickly.
+This repository packages a self-hosted Jenkins environment for Kubernetes. It provides a shared inbound-agent base image, specialized agent images, and pipelines for publishing images and deploying Jenkins.
 
-I run it on my Kubernetes cluster to test architecture and workflow patterns end to end: image design, agent behavior, pipeline flow, and day-2 operations.
+The setup is intended for evaluating CI/CD architecture and operational patterns. It favors reproducible Docker builds and Kubernetes-native agents while keeping deployment separate from image publishing.
 
-- Straightforward CI architecture that is easy to reason about and operate
-- Reproducible image builds and release workflows
-- Kubernetes-native Jenkins agent patterns
-- Practical tradeoffs between speed, reliability, and security
-
-## What this repo builds
+## Images
 
 Docker Hub profile: [derekpedersen](https://hub.docker.com/u/derekpedersen)
 
-Base image:
+Base inbound-agent image:
 
 - `derekpedersen/build-jenkins-base` ([repo](https://hub.docker.com/r/derekpedersen/build-jenkins-base))
 
@@ -39,28 +34,30 @@ Agent images:
 | Kubernetes tooling | [k8s-tooling](k8s-tooling/README.md) | [build-jenkins-k8s-tooling](https://hub.docker.com/r/derekpedersen/build-jenkins-k8s-tooling) |
 | Playwright | [playwright](playwright/README.md) | [build-jenkins-playwright](https://hub.docker.com/r/derekpedersen/build-jenkins-playwright) |
 
-All images are published to Docker Hub with both `latest` and git SHA tags.
+Images are published to Docker Hub with `latest` and Git commit SHA tags.
 
-## Trivy outputs
+## Image vulnerability reports
 
-Trivy helpers and generated artifacts now live under `.trivy/`:
+Trivy scan and summary scripts are in `.trivy/`:
 
-- Script: `.trivy/scan-image.sh`
-- Script: `.trivy/trivy-summary.sh`
-- Raw scan reports: `.trivy/reports/`
-- Rendered summary artifacts: `.trivy/summary/`
+| Artifact | Location |
+| --- | --- |
+| Scan script | `.trivy/scan-image.sh` |
+| Summary script | `.trivy/trivy-summary.sh` |
+| Raw JSON and text reports | `.trivy/reports/` |
+| Rendered HTML and Markdown summaries | `.trivy/summary/` |
 
-The Jenkins pipeline archives report artifacts from `.trivy/reports/*.json`, `.trivy/reports/*.txt`, `.trivy/summary/*.html`, and `.trivy/summary/*.md`.
+The Jenkins pipeline archives the JSON and text scan reports and the HTML and Markdown summaries.
 
-## Deploy Jenkins on Kubernetes
+## Deploy to Kubernetes
 
-Create namespace:
+Create the namespace:
 
 ```bash
 kubectl create namespace jenkins
 ```
 
-Create Docker Hub pull secret:
+Create a Docker Hub pull secret in the `jenkins` namespace:
 
 ```bash
 kubectl -n jenkins create secret docker-registry regcred \
@@ -69,15 +66,15 @@ kubectl -n jenkins create secret docker-registry regcred \
   --docker-email=<EMAIL>
 ```
 
-Install or upgrade Jenkins with both the base Helm values and the separate CasC file:
+Install or upgrade Jenkins:
 
 ```bash
 make helm-upgrade-init
 ```
 
-The repo keeps deployment defaults in [values.yaml](values.yaml) and Jenkins configuration-as-code in [jenkins-casc.yaml](jenkins-casc.yaml). Helm merges them automatically with `-f values.yaml -f jenkins-casc.yaml`.
+The `helm-upgrade-init` target initializes the Helm repository and installs or upgrades Jenkins using [values.yaml](values.yaml) and [jenkins-casc.yaml](jenkins-casc.yaml). The latter contains Jenkins Configuration as Code (JCasC).
 
-If using GitHub OAuth via JCasC, create the OAuth secret before running Helm upgrade so Jenkins has credentials at startup:
+To enable GitHub OAuth through JCasC, create or update the Kubernetes secret before deploying so the credentials are available at startup:
 
 ```bash
 kubectl -n jenkins create secret generic jenkins-github-oauth \
@@ -86,14 +83,14 @@ kubectl -n jenkins create secret generic jenkins-github-oauth \
   --dry-run=client -o yaml | kubectl apply -f -
 ```
 
-Apply order for auth changes:
+Apply authentication changes in this order:
 
 1. Create or update the `jenkins-github-oauth` secret.
-2. Run `make helm-upgrade-init`.
+2. Run `make helm-upgrade-init` to apply the configuration.
 
-If auth is misconfigured and you are locked out, fix the config in [values.yaml](values.yaml) and/or [jenkins-casc.yaml](jenkins-casc.yaml), then re-run Helm upgrade to reapply JCasC.
+If an authentication change prevents access to Jenkins, correct the configuration in [values.yaml](values.yaml) or [jenkins-casc.yaml](jenkins-casc.yaml), then run the upgrade target again.
 
-Get admin password:
+Retrieve the Jenkins admin password:
 
 ```bash
 kubectl -n jenkins get secret jenkins -o jsonpath='{.data.jenkins-admin-password}' | base64 --decode
@@ -101,5 +98,5 @@ kubectl -n jenkins get secret jenkins -o jsonpath='{.data.jenkins-admin-password
 
 ## AI agent guidance
 
-See [AGENTS.md](AGENTS.md) for the canonical instructions for AI coding and build agents working in this repository.
+See [AGENTS.md](AGENTS.md) for the canonical instructions for AI coding and build agents in this repository.
 
