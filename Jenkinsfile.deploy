@@ -3,28 +3,13 @@ pipeline {
         label 'build-jenkins-base'
     }
 
-    parameters {
-        string(
-            name: 'HELM_RELEASE',
-            defaultValue: 'jenkins',
-            description: 'Helm release name to upgrade'
-        )
-        string(
-            name: 'HELM_NAMESPACE',
-            defaultValue: 'jenkins',
-            description: 'Kubernetes namespace for the Jenkins release'
-        )
-        string(
-            name: 'HELM_VALUES',
-            defaultValue: 'values.yaml',
-            description: 'Values file to use for the Helm upgrade'
-        )
-    }
-
     stages {
-        stage('Guard: main branch only') {
+        stage('Guard: manual main-branch run only') {
             steps {
                 script {
+                    if (currentBuild.getBuildCauses('hudson.model.Cause$UserIdCause').isEmpty()) {
+                        error('Helm deploy must be started manually from the Jenkins UI.')
+                    }
                     if (env.BRANCH_NAME != 'main') {
                         error('Helm deploy jobs are restricted to the main branch only.')
                     }
@@ -42,7 +27,18 @@ pipeline {
 
         stage('Helm deploy') {
             steps {
-                sh 'make helm-upgrade HELM_RELEASE=${HELM_RELEASE} HELM_NAMESPACE=${HELM_NAMESPACE} HELM_VALUES=${HELM_VALUES}'
+                withCredentials([
+                    string(credentialsId: 'digital-ocean-pat', variable: 'DIGITALOCEAN_ACCESS_TOKEN'),
+                    string(credentialsId: 'digital-ocean-k8s-cluster', variable: 'DIGITALOCEAN_K8S_CLUSTER')
+                ]) {
+                    sh '''
+                        set +x
+                        doctl auth init --access-token "$DIGITALOCEAN_ACCESS_TOKEN"
+                        doctl kubernetes cluster kubeconfig save "$DIGITALOCEAN_K8S_CLUSTER"
+                        kubectl cluster-info
+                        make helm-upgrade
+                    '''
+                }
             }
         }
     }
