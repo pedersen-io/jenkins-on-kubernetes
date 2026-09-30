@@ -58,7 +58,7 @@ RUN DOCTL_VERSION="$(curl -fsSL https://api.github.com/repos/digitalocean/doctl/
     curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | \
         gpg --dearmor -o /etc/apt/keyrings/microsoft.gpg && \
     chmod go+r /etc/apt/keyrings/microsoft.gpg && \
-    AZ_REPO="$(lsb_release -cs)" && \
+    AZ_REPO="bookworm" && \
     echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/azure-cli/ ${AZ_REPO} main" \
         > /etc/apt/sources.list.d/azure-cli.list && \
     apt-get update -qq && \
