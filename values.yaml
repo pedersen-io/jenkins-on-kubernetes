@@ -6,6 +6,7 @@ controller:
   installPlugins:
     - kubernetes
     - workflow-aggregator
+    - docker-workflow
     - git
     - configuration-as-code
     - git-client
