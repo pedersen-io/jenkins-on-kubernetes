@@ -1,12 +1,25 @@
 def publishIfMain() {
     if (env.BRANCH_NAME == 'main') {
-        withDockerRegistry([credentialsId: 'docker-jenkins-pat', url: "https://index.docker.io/v1/"]) {
+        withDockerRegistry([credentialsId: 'docker-pat', url: "https://index.docker.io/v1/"]) {
             sh 'make publish-docker'
         }
     }
 }
 
+def scanImage(String imageName) {
+    sh "make scan-image IMAGE_NAME='${imageName}'"
+    archiveArtifacts artifacts: '.trivy/reports/*.json, .trivy/reports/*.txt', fingerprint: true, allowEmptyArchive: true
+}
+
+def generateTrivySummary() {
+    sh 'make trivy-summary'
+    archiveArtifacts artifacts: '.trivy/summary/*.html, .trivy/summary/*.md', fingerprint: true, allowEmptyArchive: true
+}
+
 pipeline {
+    triggers {
+        cron('0 12 * * 1')
+    }
     agent {
         label 'build-jenkins-base'
     }
@@ -25,6 +38,7 @@ pipeline {
             steps {
                 dir('/root/workspace/go/src/github.com/derekpedersen/gke-jenkins') {
                     sh 'make build'
+                    scanImage('derekpedersen/build-jenkins-base')
                     publishIfMain()
                 }
             }
@@ -33,6 +47,7 @@ pipeline {
             steps {
                 dir('/root/workspace/go/src/github.com/derekpedersen/gke-jenkins/golang') {
                     sh 'make build'
+                    scanImage('derekpedersen/build-jenkins-golang')
                     publishIfMain()
                 }
             }
@@ -41,6 +56,7 @@ pipeline {
             steps {
                 dir('/root/workspace/go/src/github.com/derekpedersen/gke-jenkins/node') {
                     sh 'make build'
+                    scanImage('derekpedersen/build-jenkins-node')
                     publishIfMain()
                 }
             }
@@ -49,6 +65,7 @@ pipeline {
             steps {
                 dir('/root/workspace/go/src/github.com/derekpedersen/gke-jenkins/dotnetcore') {
                     sh 'make build'
+                    scanImage('derekpedersen/build-jenkins-dotnetcore')
                     publishIfMain()
                 }
             }
@@ -57,6 +74,7 @@ pipeline {
             steps {
                 dir('/root/workspace/go/src/github.com/derekpedersen/gke-jenkins/python') {
                     sh 'make build'
+                    scanImage('derekpedersen/build-jenkins-python')
                     publishIfMain()
                 }
             }
@@ -65,6 +83,7 @@ pipeline {
             steps {
                 dir('/root/workspace/go/src/github.com/derekpedersen/gke-jenkins/rust') {
                     sh 'make build'
+                    scanImage('derekpedersen/build-jenkins-rust')
                     publishIfMain()
                 }
             }
@@ -73,6 +92,7 @@ pipeline {
             steps {
                 dir('/root/workspace/go/src/github.com/derekpedersen/gke-jenkins/c') {
                     sh 'make build'
+                    scanImage('derekpedersen/build-jenkins-c')
                     publishIfMain()
                 }
             }
@@ -81,6 +101,7 @@ pipeline {
             steps {
                 dir('/root/workspace/go/src/github.com/derekpedersen/gke-jenkins/java') {
                     sh 'make build'
+                    scanImage('derekpedersen/build-jenkins-java')
                     publishIfMain()
                 }
             }
@@ -89,6 +110,7 @@ pipeline {
             steps {
                 dir('/root/workspace/go/src/github.com/derekpedersen/gke-jenkins/php') {
                     sh 'make build'
+                    scanImage('derekpedersen/build-jenkins-php')
                     publishIfMain()
                 }
             }
@@ -97,6 +119,7 @@ pipeline {
             steps {
                 dir('/root/workspace/go/src/github.com/derekpedersen/gke-jenkins/ruby') {
                     sh 'make build'
+                    scanImage('derekpedersen/build-jenkins-ruby')
                     publishIfMain()
                 }
             }
@@ -105,6 +128,7 @@ pipeline {
             steps {
                 dir('/root/workspace/go/src/github.com/derekpedersen/gke-jenkins/k8s-tooling') {
                     sh 'make build'
+                    scanImage('derekpedersen/build-jenkins-k8s-tooling')
                     publishIfMain()
                 }
             }
@@ -113,7 +137,15 @@ pipeline {
             steps {
                 dir('/root/workspace/go/src/github.com/derekpedersen/gke-jenkins/playwright') {
                     sh 'make build'
+                    scanImage('derekpedersen/build-jenkins-playwright')
                     publishIfMain()
+                }
+            }
+        }
+        stage('Trivy summary') {
+            steps {
+                dir('/root/workspace/go/src/github.com/derekpedersen/gke-jenkins') {
+                    generateTrivySummary()
                 }
             }
         }

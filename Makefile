@@ -7,8 +7,11 @@ HELM_RELEASE ?= jenkins
 HELM_NAMESPACE ?= jenkins
 HELM_CHART ?= jenkins/jenkins
 HELM_VALUES ?= values.yaml
+HELM_CASC_VALUES ?= jenkins-casc.yaml
 HELM_REPO_NAME ?= jenkins
 HELM_REPO_URL ?= https://charts.jenkins.io
+
+.PHONY: build publish-docker build-agents publish-agents build-publish-all scan-image trivy-summary helm-repo-init helm-upgrade helm-upgrade-init
 
 build:
 	docker build ./ \
@@ -33,12 +36,21 @@ publish-agents: publish-docker build-agents
 build-publish-all: publish-agents
 	@echo "Built and published base and agent images."
 
+scan-image:
+	@if [ -z "$(IMAGE_NAME)" ]; then \
+		echo "Usage: make scan-image IMAGE_NAME=<image>"; \
+		exit 1; \
+	fi
+	@bash ./.trivy/scan-image.sh "$(IMAGE_NAME)"
+
+trivy-summary:
+	@bash ./.trivy/trivy-summary.sh
 
 helm-repo-init:
 	helm repo add $(HELM_REPO_NAME) $(HELM_REPO_URL) || true
 	helm repo update
 
 helm-upgrade: helm-repo-init
-	helm upgrade --install $(HELM_RELEASE) $(HELM_CHART) -n $(HELM_NAMESPACE) -f $(HELM_VALUES)
+	helm upgrade --install $(HELM_RELEASE) $(HELM_CHART) -n $(HELM_NAMESPACE) -f $(HELM_VALUES) -f $(HELM_CASC_VALUES)
 
 helm-upgrade-init: helm-upgrade

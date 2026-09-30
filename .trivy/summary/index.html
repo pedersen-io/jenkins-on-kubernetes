@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Trivy image scan summary</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 2rem; background: #f7f9fc; color: #1f2937; }
+    h1 { margin-bottom: 0.5rem; }
+    .banner { border-radius: 12px; padding: 1rem 1.2rem; margin: 1rem 0 1.5rem; font-weight: 700; border: 1px solid transparent; }
+    .banner-critical { background: #fff0f0; color: #7f1d1d; border-color: #f7b2b2; }
+    .banner-ok { background: #edfdf2; color: #14532d; border-color: #b7eac0; }
+    .kpis { display: flex; gap: 1rem; flex-wrap: wrap; margin: 1.5rem 0; }
+    .kpi { min-width: 180px; padding: 1rem 1.25rem; border-radius: 10px; border: 1px solid #dbe1ea; background: white; box-shadow: 0 1px 2px rgba(0,0,0,0.04); }
+    .kpi .label { font-size: 0.8rem; color: #52607a; text-transform: uppercase; letter-spacing: 0.05em; }
+    .kpi .value { font-size: 1.8rem; font-weight: 700; margin-top: .4rem; }
+    table { border-collapse: collapse; width: 100%; background: white; }
+    th, td { border: 1px solid #dbe1ea; padding: 0.7rem 0.8rem; text-align: left; vertical-align: top; }
+    th { background: #eef3ff; }
+    .image-cell { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; }
+    .status { display: inline-block; padding: 0.2rem 0.55rem; border-radius: 999px; font-size: 0.72rem; letter-spacing: 0.04em; font-weight: 700; }
+    .status-critical { background: #f8d7da; color: #7f1d1d; }
+    .status-high { background: #fff3cd; color: #7a4b00; }
+    .status-clean { background: #d1fae5; color: #065f46; }
+    .badge { display: inline-block; min-width: 2rem; text-align: center; padding: 0.22rem 0.45rem; border-radius: 999px; font-weight: 700; }
+    .badge-high { background: #fff4d6; color: #7a4b00; }
+    .badge-critical { background: #ffe2e2; color: #7f1d1d; }
+    .badge-medium { background: #dbeafe; color: #1d4ed8; }
+    .badge-unknown { background: #e5e7eb; color: #374151; }
+    .detail-table { margin-top: 0.5rem; font-size: 0.9rem; }
+    a { color: #0b57d0; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    details { margin-top: 0.5rem; }
+    summary { cursor: pointer; font-weight: 600; margin-bottom: 0.5rem; }
+  </style>
+</head>
+<body>
+  <h1>Trivy image scan summary</h1>
+  <div class="banner banner-ok">
+    No vulnerabilities detected in the current scan set.
+  </div>
+  <div class="kpis">
+    <div class="kpi"><div class="label">Images scanned</div><div class="value">0</div></div>
+    <div class="kpi"><div class="label">Images with findings</div><div class="value">0</div></div>
+    <div class="kpi"><div class="label">HIGH</div><div class="value">0</div></div>
+    <div class="kpi"><div class="label">CRITICAL</div><div class="value">0</div></div>
+  </div>
+
+  <table>
+    <thead>
+      <tr><th>Image</th><th>HIGH</th><th>CRITICAL</th><th>Total</th><th>Report</th></tr>
+    </thead>
+    <tbody>
+      <tr><td colspan="5">No Trivy reports were found.</td></tr>
+    </tbody>
+  </table>
+</body>
+</html>

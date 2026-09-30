@@ -1,2 +1,6 @@
 # script transformations
 *.sed.*
+
+# generated Trivy scan outputs
+.trivy/reports/
+.trivy/summary/
