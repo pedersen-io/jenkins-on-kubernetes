@@ -96,6 +96,272 @@ Retrieve the Jenkins admin password:
 kubectl -n jenkins get secret jenkins -o jsonpath='{.data.jenkins-admin-password}' | base64 --decode
 ```
 
+## Reusable Jenkins deploy preflight
+
+This repository includes reusable scripts for Kubernetes deploy validation and Helm deployment:
+
+- Script: [scripts/helm-preflight.sh](scripts/helm-preflight.sh)
+- Script: [scripts/helm-validate.sh](scripts/helm-validate.sh)
+- Script: [scripts/helm-render.sh](scripts/helm-render.sh)
+- Script: [scripts/helm-diff.sh](scripts/helm-diff.sh)
+- Script: [scripts/helm-deploy.sh](scripts/helm-deploy.sh)
+- Script: [scripts/helm-version.sh](scripts/helm-version.sh)
+- Script: [scripts/docker-build.sh](scripts/docker-build.sh)
+- Script: [scripts/docker-push.sh](scripts/docker-push.sh)
+- Make target (generic): `make k8s-deploy-preflight`
+- Make target: `make helm-preflight`
+- Make target (render validation): `make helm-validate`
+- Make target (render manifests to file): `make helm-render`
+- Make target (show release diff): `make helm-diff`
+- Make target (Helm deploy): `make helm-deploy`
+- Make target (set app version + image tag from deploy SHA): `make helm-version`
+- Make target (preflight + Helm upgrade): `make helm-upgrade-ci`
+- Make target (docker build): `make docker-build`
+- Make target (docker push): `make docker-push`
+- Make target (docker build + push tags): `make docker-build-push`
+
+The preflight verifies kubeconfig/context and checks RBAC before deploy steps run. The deploy script handles `helm upgrade --install` and optional override flags.
+
+### Jenkins credentials and environment
+
+Provide these Jenkins string credentials:
+
+- `digital-ocean-pat`
+- `digital-ocean-k8s-cluster`
+
+Map them to these environment variables in your pipeline:
+
+- `DIGITALOCEAN_ACCESS_TOKEN`
+- `DIGITALOCEAN_K8S_CLUSTER`
+
+Optional environment variables for customization:
+
+- `HELM_NAMESPACE` (default: `jenkins`)
+- `K8S_TARGET_NAMESPACE` (overrides `HELM_NAMESPACE` for RBAC checks)
+- `K8S_RBAC_RESOURCES` (space-separated, default: `secrets`)
+- `K8S_RBAC_VERBS` (space-separated, default: `get list create update patch`)
+- `DOCTL_KUBECONFIG_SAVE` (`1` by default; set `0` to skip doctl kubeconfig save)
+- `DOCTL_ACCESS_TOKEN` and `DO_CLUSTER_NAME` as alternates to `DIGITALOCEAN_*`
+
+Optional Helm deploy variables:
+
+- `HELM_RELEASE`, `HELM_CHART`, `HELM_NAMESPACE`
+- `HELM_VALUES` and `HELM_CASC_VALUES` (used by default)
+- `HELM_VALUES_FILES` (overrides values file list)
+- `HELM_SET_KV` (space-separated `key=value` list, each passed as `--set-string`)
+- `HELM_SET_VERSION_KEY` + `HELM_SET_VERSION` (for version/tag style set values)
+- `HELM_IMAGE_NAME_KEY` + `HELM_IMAGE_NAME`
+- `HELM_IMAGE_TAG_KEY` + `HELM_IMAGE_TAG`
+- `HELM_SET_ARGS` (raw extra `--set` or `--set-string` flags)
+- `HELM_EXTRA_ARGS` (other Helm flags like `--atomic` or `--timeout 10m`)
+- `HELM_APP_VERSION_KEY` (default: `appVersion`, used by `helm-version`)
+- `HELM_VALIDATE_SERVER_DRY_RUN` (`1` enables kubectl server-side dry-run in `helm-validate`)
+- `HELM_RENDER_OUTPUT_PATH` (output path used by `helm-render`, default `./helm-rendered.yaml`)
+
+Optional Docker build/push variables:
+
+- `DOCKER_IMAGE_NAME` (required by `docker-build-push`)
+- `DOCKER_TAGS` (space-separated tags, default `latest`)
+- `DOCKERFILE_PATH` (default `Dockerfile`)
+- `DOCKER_CONTEXT` (default `.`)
+- `DOCKER_BUILD_ARGS` (raw docker build args)
+
+### Jenkinsfile snippet
+
+Keep Jenkinsfiles minimal and call Make targets or checked-in scripts.
+
+```groovy
+pipeline {
+  agent {
+    label 'build-jenkins-base'
+  }
+
+  stages {
+    stage('Checkout') {
+      steps {
+        checkout scm
+      }
+    }
+
+    stage('Deploy preflight + helm upgrade') {
+      steps {
+        withCredentials([
+          string(credentialsId: 'digital-ocean-pat', variable: 'DIGITALOCEAN_ACCESS_TOKEN'),
+          string(credentialsId: 'digital-ocean-k8s-cluster', variable: 'DIGITALOCEAN_K8S_CLUSTER')
+        ]) {
+          sh 'make helm-upgrade-ci'
+        }
+      }
+    }
+  }
+}
+```
+
+If you only want validation and not deploy, run:
+
+```bash
+make k8s-deploy-preflight
+```
+
+Equivalent command:
+
+```bash
+make helm-preflight
+```
+
+Example deploy with explicit image and chart set values:
+
+```bash
+make HELM_RELEASE=jupyter-hub \
+  HELM_NAMESPACE=jupyter-hub \
+  HELM_CHART=jupyterhub/jupyterhub \
+  HELM_VALUES=./values.yaml \
+  HELM_CASC_VALUES= \
+  HELM_IMAGE_NAME_KEY=singleuser.image.name \
+  HELM_IMAGE_TAG_KEY=singleuser.image.tag \
+  HELM_IMAGE_NAME=docker.io/derekpedersen/jupyter-datascience-notebook \
+  HELM_IMAGE_TAG=999e948226cce2289f6166141bea9079e29e4323 \
+  HELM_EXTRA_ARGS='--create-namespace' \
+  helm-upgrade-ci
+```
+
+Example `helm-version` usage (set appVersion and image tag to deploy SHA):
+
+```bash
+make HELM_RELEASE=jupyter-hub \
+  HELM_NAMESPACE=jupyter-hub \
+  HELM_CHART=jupyterhub/jupyterhub \
+  HELM_VALUES=./values.yaml \
+  HELM_CASC_VALUES= \
+  DEPLOY_GIT_SHA=999e948226cce2289f6166141bea9079e29e4323 \
+  HELM_APP_VERSION_KEY=appVersion \
+  HELM_IMAGE_TAG_KEY=singleuser.image.tag \
+  helm-version
+```
+
+Example `helm-validate` usage:
+
+```bash
+make HELM_RELEASE=jenkins \
+  HELM_NAMESPACE=jenkins \
+  HELM_CHART=jenkins/jenkins \
+  HELM_VALUES=values.yaml \
+  HELM_CASC_VALUES=jenkins-casc.yaml \
+  helm-validate
+```
+
+Example `helm-render` usage:
+
+```bash
+make HELM_RELEASE=jenkins \
+  HELM_NAMESPACE=jenkins \
+  HELM_CHART=jenkins/jenkins \
+  HELM_RENDER_OUTPUT_PATH=./artifacts/jenkins-rendered.yaml \
+  helm-render
+```
+
+Example `docker-build-push` usage:
+
+```bash
+make DOCKER_IMAGE_NAME=derekpedersen/build-jenkins-base \
+  DOCKER_TAGS="latest $(git rev-parse HEAD)" \
+  DOCKERFILE_PATH=Dockerfile \
+  DOCKER_CONTEXT=. \
+  docker-build-push
+```
+
+Example separate Docker build then push usage:
+
+```bash
+make DOCKER_IMAGE_NAME=derekpedersen/build-jenkins-base \
+  DOCKER_TAGS="latest $(git rev-parse HEAD)" \
+  DOCKERFILE_PATH=Dockerfile \
+  DOCKER_CONTEXT=. \
+  docker-build
+
+make DOCKER_IMAGE_NAME=derekpedersen/build-jenkins-base \
+  DOCKER_TAGS="latest $(git rev-parse HEAD)" \
+  docker-push
+```
+
+Jenkins parameter example for deploy repositories:
+
+```groovy
+parameters {
+  string(name: 'DEPLOY_GIT_SHA', defaultValue: '', description: 'Git SHA to deploy')
+}
+
+stage('Deploy with version pin') {
+  steps {
+    withCredentials([
+      string(credentialsId: 'digital-ocean-pat', variable: 'DIGITALOCEAN_ACCESS_TOKEN'),
+      string(credentialsId: 'digital-ocean-k8s-cluster', variable: 'DIGITALOCEAN_K8S_CLUSTER')
+    ]) {
+      sh '''
+        make HELM_RELEASE=jupyter-hub \
+          HELM_NAMESPACE=jupyter-hub \
+          HELM_CHART=jupyterhub/jupyterhub \
+          HELM_VALUES=./values.yaml \
+          HELM_CASC_VALUES= \
+          DEPLOY_GIT_SHA="${DEPLOY_GIT_SHA}" \
+          HELM_APP_VERSION_KEY=appVersion \
+          HELM_IMAGE_TAG_KEY=singleuser.image.tag \
+          helm-version
+      '''
+    }
+  }
+}
+```
+
+### Jenkinsfile snippet for external repositories
+
+If another repository wants to reuse this deploy logic, check out this repository into a subdirectory and run the shared targets from there.
+
+```groovy
+pipeline {
+  agent {
+    label 'build-jenkins-base'
+  }
+
+  stages {
+    stage('Checkout app repository') {
+      steps {
+        checkout scm
+      }
+    }
+
+    stage('Checkout shared deploy tooling') {
+      steps {
+        dir('jenkins-on-kubernetes') {
+          git branch: 'main', url: 'https://github.com/pedersen-io/jenkins-on-kubernetes.git'
+        }
+      }
+    }
+
+    stage('Deploy preflight + helm upgrade') {
+      steps {
+        withCredentials([
+          string(credentialsId: 'digital-ocean-pat', variable: 'DIGITALOCEAN_ACCESS_TOKEN'),
+          string(credentialsId: 'digital-ocean-k8s-cluster', variable: 'DIGITALOCEAN_K8S_CLUSTER')
+        ]) {
+          dir('jenkins-on-kubernetes') {
+            sh 'make HELM_NAMESPACE=jenkins helm-upgrade-ci'
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+If you only want the preflight from an external repository, run:
+
+```groovy
+dir('jenkins-on-kubernetes') {
+  sh 'make HELM_NAMESPACE=jenkins k8s-deploy-preflight'
+}
+```
+
 ## AI agent guidance
 
 See [AGENTS.md](AGENTS.md) for the canonical instructions for AI coding and build agents in this repository.

@@ -34,10 +34,10 @@ controller:
                     successThreshold: 0
                     timeoutSeconds: 0
                   name: "jnlp"
-                  resourceLimitCpu: ".5"
+                  resourceLimitCpu: ".4"
                   resourceLimitMemory: "512Mi"
-                  resourceRequestCpu: ".025"
-                  resourceRequestMemory: "128Mi"
+                  resourceRequestCpu: ".2"
+                  resourceRequestMemory: "384Mi"
                   workingDir: "/home/jenkins"
                   envVars:
                   - envVar:
@@ -51,10 +51,10 @@ controller:
                   image: "docker:29-dind"
                   name: "docker"
                   privileged: true
-                  resourceLimitCpu: "1"
+                  resourceLimitCpu: ".5"
                   resourceLimitMemory: "768Mi"
-                  resourceRequestCpu: ".05"
-                  resourceRequestMemory: "192Mi"
+                  resourceRequestCpu: ".178"
+                  resourceRequestMemory: "380Mi"
                   ttyEnabled: true
                   workingDir: "/home/jenkins"
                 id: "e4a18b6c-8e74-498c-adad-53d145c92728"
@@ -79,10 +79,10 @@ controller:
                     successThreshold: 0
                     timeoutSeconds: 0
                   name: "jnlp"
-                  resourceLimitCpu: ".5"
+                  resourceLimitCpu: ".4"
                   resourceLimitMemory: "512Mi"
-                  resourceRequestCpu: ".025"
-                  resourceRequestMemory: "128Mi"
+                  resourceRequestCpu: ".2"
+                  resourceRequestMemory: "384Mi"
                   ttyEnabled: true
                   workingDir: "/home/jenkins"
                   envVars:
@@ -97,10 +97,10 @@ controller:
                   image: "docker:29-dind"
                   name: "docker"
                   privileged: true
-                  resourceLimitCpu: "1"
+                  resourceLimitCpu: ".5"
                   resourceLimitMemory: "768Mi"
-                  resourceRequestCpu: ".05"
-                  resourceRequestMemory: "192Mi"
+                  resourceRequestCpu: ".178"
+                  resourceRequestMemory: "380Mi"
                   ttyEnabled: true
                   workingDir: "/home/jenkins"
                 id: "6170664b-ab08-46ae-a41d-a2721b714a12"
@@ -123,10 +123,12 @@ controller:
                     successThreshold: 0
                     timeoutSeconds: 0
                   name: "jnlp"
-                  resourceLimitCpu: ".5"
+                  resourceLimitCpu: ".4"
                   resourceLimitMemory: "512Mi"
-                  resourceRequestCpu: ".025"
-                  resourceRequestMemory: "128Mi"
+                  resourceLimitEphemeralStorage: "8Gi"
+                  resourceRequestCpu: ".2"
+                  resourceRequestMemory: "384Mi"
+                  resourceRequestEphemeralStorage: "4Gi"
                   ttyEnabled: true
                   workingDir: "/home/jenkins/agent"
                   envVars:
@@ -141,10 +143,10 @@ controller:
                   image: "docker:29-dind"
                   name: "docker"
                   privileged: true
-                  resourceLimitCpu: "1"
+                  resourceLimitCpu: ".5"
                   resourceLimitMemory: "768Mi"
-                  resourceRequestCpu: ".05"
-                  resourceRequestMemory: "192Mi"
+                  resourceRequestCpu: ".178"
+                  resourceRequestMemory: "380Mi"
                   ttyEnabled: true
                   workingDir: "/home/jenkins/agent"
                 id: "02b8986f-3c2b-46a9-9b2a-00ba2e83cc4e"
@@ -167,10 +169,10 @@ controller:
                     successThreshold: 0
                     timeoutSeconds: 0
                   name: "jnlp"
-                  resourceLimitCpu: ".5"
+                  resourceLimitCpu: ".4"
                   resourceLimitMemory: "512Mi"
-                  resourceRequestCpu: ".025"
-                  resourceRequestMemory: "128Mi"
+                  resourceRequestCpu: ".2"
+                  resourceRequestMemory: "384Mi"
                   ttyEnabled: true
                   workingDir: "/home/jenkins"
                   envVars:
@@ -185,10 +187,10 @@ controller:
                   image: "docker:29-dind"
                   name: "docker"
                   privileged: true
-                  resourceLimitCpu: "1"
+                  resourceLimitCpu: ".5"
                   resourceLimitMemory: "768Mi"
-                  resourceRequestCpu: ".05"
-                  resourceRequestMemory: "192Mi"
+                  resourceRequestCpu: ".178"
+                  resourceRequestMemory: "380Mi"
                   ttyEnabled: true
                   workingDir: "/home/jenkins"
                 id: "6170664b-ab08-46ae-a41d-a2721b714a12"
@@ -211,10 +213,10 @@ controller:
                     successThreshold: 0
                     timeoutSeconds: 0
                   name: "jnlp"
-                  resourceLimitCpu: ".5"
+                  resourceLimitCpu: ".4"
                   resourceLimitMemory: "512Mi"
-                  resourceRequestCpu: ".025"
-                  resourceRequestMemory: "128Mi"
+                  resourceRequestCpu: ".2"
+                  resourceRequestMemory: "384Mi"
                   ttyEnabled: true
                   workingDir: "/home/jenkins"
                   envVars:
@@ -229,10 +231,10 @@ controller:
                   image: "docker:29-dind"
                   name: "docker"
                   privileged: true
-                  resourceLimitCpu: "1"
+                  resourceLimitCpu: ".5"
                   resourceLimitMemory: "768Mi"
-                  resourceRequestCpu: ".05"
-                  resourceRequestMemory: "192Mi"
+                  resourceRequestCpu: ".178"
+                  resourceRequestMemory: "380Mi"
                   ttyEnabled: true
                   workingDir: "/home/jenkins"
                 id: "7d3a66a7-9f0e-4d80-b582-7f9d87a8e0a1"
@@ -255,10 +257,10 @@ controller:
                     successThreshold: 0
                     timeoutSeconds: 0
                   name: "jnlp"
-                  resourceLimitCpu: ".5"
+                  resourceLimitCpu: ".4"
                   resourceLimitMemory: "512Mi"
-                  resourceRequestCpu: ".025"
-                  resourceRequestMemory: "128Mi"
+                  resourceRequestCpu: ".2"
+                  resourceRequestMemory: "384Mi"
                   ttyEnabled: true
                   workingDir: "/home/jenkins"
                   envVars:
@@ -273,10 +275,10 @@ controller:
                   image: "docker:29-dind"
                   name: "docker"
                   privileged: true
-                  resourceLimitCpu: "1"
+                  resourceLimitCpu: ".5"
                   resourceLimitMemory: "768Mi"
-                  resourceRequestCpu: ".05"
-                  resourceRequestMemory: "192Mi"
+                  resourceRequestCpu: ".178"
+                  resourceRequestMemory: "380Mi"
                   ttyEnabled: true
                   workingDir: "/home/jenkins"
                 id: "d469d9c0-dfc9-4d97-b6e7-aef0d7cf6d4b"
@@ -299,10 +301,10 @@ controller:
                     successThreshold: 0
                     timeoutSeconds: 0
                   name: "jnlp"
-                  resourceLimitCpu: ".5"
+                  resourceLimitCpu: ".4"
                   resourceLimitMemory: "512Mi"
-                  resourceRequestCpu: ".025"
-                  resourceRequestMemory: "128Mi"
+                  resourceRequestCpu: ".2"
+                  resourceRequestMemory: "384Mi"
                   ttyEnabled: true
                   workingDir: "/home/jenkins"
                   envVars:
@@ -317,10 +319,10 @@ controller:
                   image: "docker:29-dind"
                   name: "docker"
                   privileged: true
-                  resourceLimitCpu: "1"
+                  resourceLimitCpu: ".5"
                   resourceLimitMemory: "768Mi"
-                  resourceRequestCpu: ".05"
-                  resourceRequestMemory: "192Mi"
+                  resourceRequestCpu: ".178"
+                  resourceRequestMemory: "380Mi"
                   ttyEnabled: true
                   workingDir: "/home/jenkins"
                 id: "8a8b3838-8d97-46cc-9b50-72e7316c8964"
@@ -343,10 +345,10 @@ controller:
                     successThreshold: 0
                     timeoutSeconds: 0
                   name: "jnlp"
-                  resourceLimitCpu: ".5"
+                  resourceLimitCpu: ".4"
                   resourceLimitMemory: "512Mi"
-                  resourceRequestCpu: ".025"
-                  resourceRequestMemory: "128Mi"
+                  resourceRequestCpu: ".2"
+                  resourceRequestMemory: "384Mi"
                   ttyEnabled: true
                   workingDir: "/home/jenkins"
                   envVars:
@@ -361,10 +363,10 @@ controller:
                   image: "docker:29-dind"
                   name: "docker"
                   privileged: true
-                  resourceLimitCpu: "1"
+                  resourceLimitCpu: ".5"
                   resourceLimitMemory: "768Mi"
-                  resourceRequestCpu: ".05"
-                  resourceRequestMemory: "192Mi"
+                  resourceRequestCpu: ".178"
+                  resourceRequestMemory: "380Mi"
                   ttyEnabled: true
                   workingDir: "/home/jenkins"
                 id: "b7b147ec-0f49-49a0-a6fd-d02153f4290f"
@@ -387,10 +389,10 @@ controller:
                     successThreshold: 0
                     timeoutSeconds: 0
                   name: "jnlp"
-                  resourceLimitCpu: ".5"
+                  resourceLimitCpu: ".4"
                   resourceLimitMemory: "512Mi"
-                  resourceRequestCpu: ".025"
-                  resourceRequestMemory: "128Mi"
+                  resourceRequestCpu: ".2"
+                  resourceRequestMemory: "384Mi"
                   ttyEnabled: true
                   workingDir: "/home/jenkins"
                   envVars:
@@ -405,10 +407,10 @@ controller:
                   image: "docker:29-dind"
                   name: "docker"
                   privileged: true
-                  resourceLimitCpu: "1"
+                  resourceLimitCpu: ".5"
                   resourceLimitMemory: "768Mi"
-                  resourceRequestCpu: ".05"
-                  resourceRequestMemory: "192Mi"
+                  resourceRequestCpu: ".178"
+                  resourceRequestMemory: "380Mi"
                   ttyEnabled: true
                   workingDir: "/home/jenkins"
                 id: "b10036f5-f057-4f65-9f8d-d9400c2c895a"
@@ -431,10 +433,10 @@ controller:
                     successThreshold: 0
                     timeoutSeconds: 0
                   name: "jnlp"
-                  resourceLimitCpu: ".5"
+                  resourceLimitCpu: ".4"
                   resourceLimitMemory: "512Mi"
-                  resourceRequestCpu: ".025"
-                  resourceRequestMemory: "128Mi"
+                  resourceRequestCpu: ".2"
+                  resourceRequestMemory: "384Mi"
                   ttyEnabled: true
                   workingDir: "/home/jenkins"
                   envVars:
@@ -449,10 +451,10 @@ controller:
                   image: "docker:29-dind"
                   name: "docker"
                   privileged: true
-                  resourceLimitCpu: "1"
+                  resourceLimitCpu: ".5"
                   resourceLimitMemory: "768Mi"
-                  resourceRequestCpu: ".05"
-                  resourceRequestMemory: "192Mi"
+                  resourceRequestCpu: ".178"
+                  resourceRequestMemory: "380Mi"
                   ttyEnabled: true
                   workingDir: "/home/jenkins"
                 id: "f0b12d7e-f7ca-4816-a9d4-5cab7c620304"
@@ -475,10 +477,10 @@ controller:
                     successThreshold: 0
                     timeoutSeconds: 0
                   name: "jnlp"
-                  resourceLimitCpu: ".5"
+                  resourceLimitCpu: ".4"
                   resourceLimitMemory: "512Mi"
-                  resourceRequestCpu: ".025"
-                  resourceRequestMemory: "128Mi"
+                  resourceRequestCpu: ".2"
+                  resourceRequestMemory: "384Mi"
                   ttyEnabled: true
                   workingDir: "/home/jenkins"
                   envVars:
@@ -493,10 +495,10 @@ controller:
                   image: "docker:29-dind"
                   name: "docker"
                   privileged: true
-                  resourceLimitCpu: "1"
+                  resourceLimitCpu: ".5"
                   resourceLimitMemory: "768Mi"
-                  resourceRequestCpu: ".05"
-                  resourceRequestMemory: "192Mi"
+                  resourceRequestCpu: ".178"
+                  resourceRequestMemory: "380Mi"
                   ttyEnabled: true
                   workingDir: "/home/jenkins"
                 id: "f6dc7e4a-9246-48ec-8b2b-7221f8903001"
@@ -519,10 +521,10 @@ controller:
                     successThreshold: 0
                     timeoutSeconds: 0
                   name: "jnlp"
-                  resourceLimitCpu: ".5"
+                  resourceLimitCpu: ".4"
                   resourceLimitMemory: "512Mi"
-                  resourceRequestCpu: ".025"
-                  resourceRequestMemory: "128Mi"
+                  resourceRequestCpu: ".2"
+                  resourceRequestMemory: "384Mi"
                   ttyEnabled: true
                   workingDir: "/home/jenkins"
                   envVars:
@@ -537,10 +539,10 @@ controller:
                   image: "docker:29-dind"
                   name: "docker"
                   privileged: true
-                  resourceLimitCpu: "1"
+                  resourceLimitCpu: ".5"
                   resourceLimitMemory: "768Mi"
-                  resourceRequestCpu: ".05"
-                  resourceRequestMemory: "192Mi"
+                  resourceRequestCpu: ".178"
+                  resourceRequestMemory: "380Mi"
                   ttyEnabled: true
                   workingDir: "/home/jenkins"
                 id: "f76c4ea0-0d62-4f1a-9d83-6b0a2c88a5ef"

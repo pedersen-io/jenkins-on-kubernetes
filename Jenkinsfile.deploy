@@ -19,9 +19,7 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                dir('/root/workspace/go/src/github.com/derekpedersen/gke-jenkins') {
-                    checkout scm
-                }
+                checkout scm
             }
         }
 
@@ -31,13 +29,7 @@ pipeline {
                     string(credentialsId: 'digital-ocean-pat', variable: 'DIGITALOCEAN_ACCESS_TOKEN'),
                     string(credentialsId: 'digital-ocean-k8s-cluster', variable: 'DIGITALOCEAN_K8S_CLUSTER')
                 ]) {
-                    sh '''
-                        set +x
-                        doctl auth init --access-token "$DIGITALOCEAN_ACCESS_TOKEN"
-                        doctl kubernetes cluster kubeconfig save "$DIGITALOCEAN_K8S_CLUSTER"
-                        kubectl cluster-info
-                        make helm-upgrade
-                    '''
+                    sh 'make helm-upgrade-ci'
                 }
             }
         }

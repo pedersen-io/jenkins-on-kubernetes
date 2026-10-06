@@ -3,7 +3,7 @@ FROM build-jenkins-base
 USER root
 
 # node, angular-cli, vue-cli, npx
-RUN curl -fsSL https://deb.nodesource.com/setup_current.x | bash - && \
+RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - && \
     apt-get update -qq && \
     apt-get install -qqy --no-install-recommends nodejs && \
     npm install -g yarn && \
