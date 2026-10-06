@@ -125,8 +125,10 @@ controller:
                   name: "jnlp"
                   resourceLimitCpu: ".4"
                   resourceLimitMemory: "512Mi"
+                  resourceLimitEphemeralStorage: "8Gi"
                   resourceRequestCpu: ".2"
                   resourceRequestMemory: "384Mi"
+                  resourceRequestEphemeralStorage: "4Gi"
                   ttyEnabled: true
                   workingDir: "/home/jenkins/agent"
                   envVars:
