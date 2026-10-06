@@ -16,6 +16,7 @@ This repository builds and publishes Jenkins agent Docker images for Kubernetes-
 - Follow `build-<project>-<language>` consistently for Docker image names and Jenkins labels to avoid collisions with other repos.
 - Use `GIT_COMMIT_SHA ?= $(shell git rev-parse HEAD)` in agent Makefiles.
 - Keep the standard `build` and `publish-docker` targets in each agent Makefile.
+- Keep Jenkinsfiles minimal: avoid multi-line inline shell scripting in pipeline files, and prefer invoking a Makefile target or a checked-in shell script.
 
 ## Root build workflow
 - Update the root `AGENT_DIRS` list in `Makefile` whenever a new agent folder is added.

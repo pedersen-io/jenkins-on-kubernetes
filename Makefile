@@ -11,7 +11,7 @@ HELM_CASC_VALUES ?= jenkins-casc.yaml
 HELM_REPO_NAME ?= jenkins
 HELM_REPO_URL ?= https://charts.jenkins.io
 
-.PHONY: build publish-docker build-agents publish-agents build-publish-all scan-image trivy-summary helm-repo-init helm-upgrade helm-upgrade-init
+.PHONY: build publish-docker build-agents publish-agents build-publish-all scan-image trivy-summary helm-repo-init helm-preflight helm-deploy helm-upgrade helm-upgrade-init k8s-deploy-preflight helm-deploy-preflight helm-upgrade-ci
 
 build:
 	docker build ./ \
@@ -50,7 +50,33 @@ helm-repo-init:
 	helm repo add $(HELM_REPO_NAME) $(HELM_REPO_URL) || true
 	helm repo update
 
-helm-upgrade: helm-repo-init
-	helm upgrade --install $(HELM_RELEASE) $(HELM_CHART) -n $(HELM_NAMESPACE) -f $(HELM_VALUES) -f $(HELM_CASC_VALUES)
+helm-deploy:
+	@HELM_RELEASE=$(HELM_RELEASE) \
+	HELM_CHART=$(HELM_CHART) \
+	HELM_NAMESPACE=$(HELM_NAMESPACE) \
+	HELM_VALUES_FILES="$(HELM_VALUES) $(HELM_CASC_VALUES)" \
+	HELM_SET_KV="$(HELM_SET_KV)" \
+	HELM_SET_ARGS="$(HELM_SET_ARGS)" \
+	HELM_SET_VERSION="$(HELM_SET_VERSION)" \
+	HELM_SET_VERSION_KEY="$(HELM_SET_VERSION_KEY)" \
+	HELM_IMAGE_NAME="$(HELM_IMAGE_NAME)" \
+	HELM_IMAGE_TAG="$(HELM_IMAGE_TAG)" \
+	HELM_IMAGE_NAME_KEY="$(HELM_IMAGE_NAME_KEY)" \
+	HELM_IMAGE_TAG_KEY="$(HELM_IMAGE_TAG_KEY)" \
+	HELM_EXTRA_ARGS="$(HELM_EXTRA_ARGS)" \
+	bash ./scripts/helm-deploy.sh
+
+helm-upgrade: helm-repo-init helm-deploy
 
 helm-upgrade-init: helm-upgrade
+
+k8s-deploy-preflight:
+	@HELM_NAMESPACE=$(HELM_NAMESPACE) bash ./scripts/helm-preflight.sh
+
+helm-preflight:
+	@HELM_NAMESPACE=$(HELM_NAMESPACE) bash ./scripts/helm-preflight.sh
+
+helm-deploy-preflight:
+	@$(MAKE) helm-preflight HELM_NAMESPACE=$(HELM_NAMESPACE)
+
+helm-upgrade-ci: helm-deploy-preflight helm-upgrade

@@ -21,6 +21,7 @@ This repository builds and publishes Jenkins agent Docker images for Kubernetes-
 - Keep the standard `build` and `publish-docker` targets in each agent Makefile.
 - Keep changes small and repo-consistent rather than broad refactors.
 - Do not add unrelated tooling or dependencies unless required by the runtime or build process.
+- Keep Jenkinsfiles minimal: avoid multi-line inline shell scripting in Jenkins pipeline files, and prefer calling a Makefile target or a checked-in shell script.
 
 ## Root build workflow
 
