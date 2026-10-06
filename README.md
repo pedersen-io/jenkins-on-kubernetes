@@ -101,11 +101,24 @@ kubectl -n jenkins get secret jenkins -o jsonpath='{.data.jenkins-admin-password
 This repository includes reusable scripts for Kubernetes deploy validation and Helm deployment:
 
 - Script: [scripts/helm-preflight.sh](scripts/helm-preflight.sh)
+- Script: [scripts/helm-validate.sh](scripts/helm-validate.sh)
+- Script: [scripts/helm-render.sh](scripts/helm-render.sh)
+- Script: [scripts/helm-diff.sh](scripts/helm-diff.sh)
 - Script: [scripts/helm-deploy.sh](scripts/helm-deploy.sh)
+- Script: [scripts/helm-version.sh](scripts/helm-version.sh)
+- Script: [scripts/docker-build.sh](scripts/docker-build.sh)
+- Script: [scripts/docker-push.sh](scripts/docker-push.sh)
 - Make target (generic): `make k8s-deploy-preflight`
 - Make target: `make helm-preflight`
+- Make target (render validation): `make helm-validate`
+- Make target (render manifests to file): `make helm-render`
+- Make target (show release diff): `make helm-diff`
 - Make target (Helm deploy): `make helm-deploy`
+- Make target (set app version + image tag from deploy SHA): `make helm-version`
 - Make target (preflight + Helm upgrade): `make helm-upgrade-ci`
+- Make target (docker build): `make docker-build`
+- Make target (docker push): `make docker-push`
+- Make target (docker build + push tags): `make docker-build-push`
 
 The preflight verifies kubeconfig/context and checks RBAC before deploy steps run. The deploy script handles `helm upgrade --install` and optional override flags.
 
@@ -141,6 +154,17 @@ Optional Helm deploy variables:
 - `HELM_IMAGE_TAG_KEY` + `HELM_IMAGE_TAG`
 - `HELM_SET_ARGS` (raw extra `--set` or `--set-string` flags)
 - `HELM_EXTRA_ARGS` (other Helm flags like `--atomic` or `--timeout 10m`)
+- `HELM_APP_VERSION_KEY` (default: `appVersion`, used by `helm-version`)
+- `HELM_VALIDATE_SERVER_DRY_RUN` (`1` enables kubectl server-side dry-run in `helm-validate`)
+- `HELM_RENDER_OUTPUT_PATH` (output path used by `helm-render`, default `./helm-rendered.yaml`)
+
+Optional Docker build/push variables:
+
+- `DOCKER_IMAGE_NAME` (required by `docker-build-push`)
+- `DOCKER_TAGS` (space-separated tags, default `latest`)
+- `DOCKERFILE_PATH` (default `Dockerfile`)
+- `DOCKER_CONTEXT` (default `.`)
+- `DOCKER_BUILD_ARGS` (raw docker build args)
 
 ### Jenkinsfile snippet
 
@@ -199,6 +223,94 @@ make HELM_RELEASE=jupyter-hub \
   HELM_IMAGE_TAG=999e948226cce2289f6166141bea9079e29e4323 \
   HELM_EXTRA_ARGS='--create-namespace' \
   helm-upgrade-ci
+```
+
+Example `helm-version` usage (set appVersion and image tag to deploy SHA):
+
+```bash
+make HELM_RELEASE=jupyter-hub \
+  HELM_NAMESPACE=jupyter-hub \
+  HELM_CHART=jupyterhub/jupyterhub \
+  HELM_VALUES=./values.yaml \
+  HELM_CASC_VALUES= \
+  DEPLOY_GIT_SHA=999e948226cce2289f6166141bea9079e29e4323 \
+  HELM_APP_VERSION_KEY=appVersion \
+  HELM_IMAGE_TAG_KEY=singleuser.image.tag \
+  helm-version
+```
+
+Example `helm-validate` usage:
+
+```bash
+make HELM_RELEASE=jenkins \
+  HELM_NAMESPACE=jenkins \
+  HELM_CHART=jenkins/jenkins \
+  HELM_VALUES=values.yaml \
+  HELM_CASC_VALUES=jenkins-casc.yaml \
+  helm-validate
+```
+
+Example `helm-render` usage:
+
+```bash
+make HELM_RELEASE=jenkins \
+  HELM_NAMESPACE=jenkins \
+  HELM_CHART=jenkins/jenkins \
+  HELM_RENDER_OUTPUT_PATH=./artifacts/jenkins-rendered.yaml \
+  helm-render
+```
+
+Example `docker-build-push` usage:
+
+```bash
+make DOCKER_IMAGE_NAME=derekpedersen/build-jenkins-base \
+  DOCKER_TAGS="latest $(git rev-parse HEAD)" \
+  DOCKERFILE_PATH=Dockerfile \
+  DOCKER_CONTEXT=. \
+  docker-build-push
+```
+
+Example separate Docker build then push usage:
+
+```bash
+make DOCKER_IMAGE_NAME=derekpedersen/build-jenkins-base \
+  DOCKER_TAGS="latest $(git rev-parse HEAD)" \
+  DOCKERFILE_PATH=Dockerfile \
+  DOCKER_CONTEXT=. \
+  docker-build
+
+make DOCKER_IMAGE_NAME=derekpedersen/build-jenkins-base \
+  DOCKER_TAGS="latest $(git rev-parse HEAD)" \
+  docker-push
+```
+
+Jenkins parameter example for deploy repositories:
+
+```groovy
+parameters {
+  string(name: 'DEPLOY_GIT_SHA', defaultValue: '', description: 'Git SHA to deploy')
+}
+
+stage('Deploy with version pin') {
+  steps {
+    withCredentials([
+      string(credentialsId: 'digital-ocean-pat', variable: 'DIGITALOCEAN_ACCESS_TOKEN'),
+      string(credentialsId: 'digital-ocean-k8s-cluster', variable: 'DIGITALOCEAN_K8S_CLUSTER')
+    ]) {
+      sh '''
+        make HELM_RELEASE=jupyter-hub \
+          HELM_NAMESPACE=jupyter-hub \
+          HELM_CHART=jupyterhub/jupyterhub \
+          HELM_VALUES=./values.yaml \
+          HELM_CASC_VALUES= \
+          DEPLOY_GIT_SHA="${DEPLOY_GIT_SHA}" \
+          HELM_APP_VERSION_KEY=appVersion \
+          HELM_IMAGE_TAG_KEY=singleuser.image.tag \
+          helm-version
+      '''
+    }
+  }
+}
 ```
 
 ### Jenkinsfile snippet for external repositories
