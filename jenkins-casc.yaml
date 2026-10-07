@@ -35,7 +35,7 @@ controller:
                     timeoutSeconds: 0
                   name: "jnlp"
                   resourceLimitCpu: ".4"
-                  resourceLimitMemory: "512Mi"
+                  resourceLimitMemory: "768Mi"
                   resourceRequestCpu: ".2"
                   resourceRequestMemory: "384Mi"
                   workingDir: "/home/jenkins"
@@ -80,7 +80,7 @@ controller:
                     timeoutSeconds: 0
                   name: "jnlp"
                   resourceLimitCpu: ".4"
-                  resourceLimitMemory: "512Mi"
+                  resourceLimitMemory: "768Mi"
                   resourceRequestCpu: ".2"
                   resourceRequestMemory: "384Mi"
                   ttyEnabled: true
@@ -124,7 +124,7 @@ controller:
                     timeoutSeconds: 0
                   name: "jnlp"
                   resourceLimitCpu: ".4"
-                  resourceLimitMemory: "512Mi"
+                  resourceLimitMemory: "768Mi"
                   resourceLimitEphemeralStorage: "8Gi"
                   resourceRequestCpu: ".2"
                   resourceRequestMemory: "384Mi"
@@ -170,7 +170,7 @@ controller:
                     timeoutSeconds: 0
                   name: "jnlp"
                   resourceLimitCpu: ".4"
-                  resourceLimitMemory: "512Mi"
+                  resourceLimitMemory: "768Mi"
                   resourceRequestCpu: ".2"
                   resourceRequestMemory: "384Mi"
                   ttyEnabled: true
@@ -214,7 +214,7 @@ controller:
                     timeoutSeconds: 0
                   name: "jnlp"
                   resourceLimitCpu: ".4"
-                  resourceLimitMemory: "512Mi"
+                  resourceLimitMemory: "768Mi"
                   resourceRequestCpu: ".2"
                   resourceRequestMemory: "384Mi"
                   ttyEnabled: true
@@ -258,7 +258,7 @@ controller:
                     timeoutSeconds: 0
                   name: "jnlp"
                   resourceLimitCpu: ".4"
-                  resourceLimitMemory: "512Mi"
+                  resourceLimitMemory: "768Mi"
                   resourceRequestCpu: ".2"
                   resourceRequestMemory: "384Mi"
                   ttyEnabled: true
@@ -302,7 +302,7 @@ controller:
                     timeoutSeconds: 0
                   name: "jnlp"
                   resourceLimitCpu: ".4"
-                  resourceLimitMemory: "512Mi"
+                  resourceLimitMemory: "768Mi"
                   resourceRequestCpu: ".2"
                   resourceRequestMemory: "384Mi"
                   ttyEnabled: true
@@ -346,7 +346,7 @@ controller:
                     timeoutSeconds: 0
                   name: "jnlp"
                   resourceLimitCpu: ".4"
-                  resourceLimitMemory: "512Mi"
+                  resourceLimitMemory: "768Mi"
                   resourceRequestCpu: ".2"
                   resourceRequestMemory: "384Mi"
                   ttyEnabled: true
@@ -390,7 +390,7 @@ controller:
                     timeoutSeconds: 0
                   name: "jnlp"
                   resourceLimitCpu: ".4"
-                  resourceLimitMemory: "512Mi"
+                  resourceLimitMemory: "768Mi"
                   resourceRequestCpu: ".2"
                   resourceRequestMemory: "384Mi"
                   ttyEnabled: true
@@ -434,7 +434,7 @@ controller:
                     timeoutSeconds: 0
                   name: "jnlp"
                   resourceLimitCpu: ".4"
-                  resourceLimitMemory: "512Mi"
+                  resourceLimitMemory: "768Mi"
                   resourceRequestCpu: ".2"
                   resourceRequestMemory: "384Mi"
                   ttyEnabled: true
@@ -478,7 +478,7 @@ controller:
                     timeoutSeconds: 0
                   name: "jnlp"
                   resourceLimitCpu: ".4"
-                  resourceLimitMemory: "512Mi"
+                  resourceLimitMemory: "768Mi"
                   resourceRequestCpu: ".2"
                   resourceRequestMemory: "384Mi"
                   ttyEnabled: true
@@ -522,7 +522,7 @@ controller:
                     timeoutSeconds: 0
                   name: "jnlp"
                   resourceLimitCpu: ".4"
-                  resourceLimitMemory: "512Mi"
+                  resourceLimitMemory: "768Mi"
                   resourceRequestCpu: ".2"
                   resourceRequestMemory: "384Mi"
                   ttyEnabled: true
