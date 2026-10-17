@@ -79,13 +79,16 @@ controller:
                     successThreshold: 0
                     timeoutSeconds: 0
                   name: "jnlp"
-                  resourceLimitCpu: ".4"
-                  resourceLimitMemory: "768Mi"
+                  resourceLimitCpu: ".5"
+                  resourceLimitMemory: "1Gi"
                   resourceRequestCpu: ".2"
-                  resourceRequestMemory: "256Mi"
+                  resourceRequestMemory: "768Mi"
                   ttyEnabled: true
                   workingDir: "/home/jenkins"
                   envVars:
+                  - envVar:
+                      key: "JAVA_TOOL_OPTIONS"
+                      value: "-Xms64m -Xmx128m"
                   - envVar:
                       key: "DOCKER_HOST"
                       value: "tcp://127.0.0.1:2375"
@@ -97,10 +100,10 @@ controller:
                   image: "docker:29-dind"
                   name: "docker"
                   privileged: true
-                  resourceLimitCpu: ".5"
-                  resourceLimitMemory: "768Mi"
-                  resourceRequestCpu: ".178"
-                  resourceRequestMemory: "256Mi"
+                  resourceLimitCpu: ".75"
+                  resourceLimitMemory: "1Gi"
+                  resourceRequestCpu: ".2"
+                  resourceRequestMemory: "512Mi"
                   ttyEnabled: true
                   workingDir: "/home/jenkins"
                 id: "6170664b-ab08-46ae-a41d-a2721b714a12"
