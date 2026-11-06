@@ -2,7 +2,7 @@ GIT_COMMIT_SHA ?= $(shell git rev-parse HEAD)
 BASE_IMAGE_NAME = derekpedersen/build-jenkins-base
 BASE_IMAGE_LATEST = $(BASE_IMAGE_NAME):latest
 BASE_IMAGE_SHA = $(BASE_IMAGE_NAME):$(GIT_COMMIT_SHA)
-AGENT_DIRS = dotnetcore golang node python rust c java php ruby k8s-tooling playwright
+AGENT_DIRS = dotnetcore golang node python rust c java php ruby k8s-tooling playwright terraform aws
 HELM_RELEASE ?= jenkins
 HELM_NAMESPACE ?= jenkins
 HELM_CHART ?= jenkins/jenkins
@@ -53,12 +53,12 @@ docker-build:
 	DOCKER_CONTEXT="$(DOCKER_CONTEXT)" \
 	DOCKERFILE_PATH="$(DOCKERFILE_PATH)" \
 	DOCKER_BUILD_ARGS="$(DOCKER_BUILD_ARGS)" \
-	bash ./scripts/docker-build.sh
+	bash ./.scripts/docker-build.sh
 
 docker-push:
 	@DOCKER_IMAGE_NAME="$(DOCKER_IMAGE_NAME)" \
 	DOCKER_TAGS="$(DOCKER_TAGS)" \
-	bash ./scripts/docker-push.sh
+	bash ./.scripts/docker-push.sh
 
 docker-build-push:
 	@$(MAKE) docker-build \
@@ -85,7 +85,7 @@ helm-validate: helm-repo-init
 	HELM_SET_ARGS="$(HELM_SET_ARGS)" \
 	HELM_EXTRA_ARGS="$(HELM_EXTRA_ARGS)" \
 	HELM_VALIDATE_SERVER_DRY_RUN="$(HELM_VALIDATE_SERVER_DRY_RUN)" \
-	bash ./scripts/helm-validate.sh
+	bash ./.scripts/helm-validate.sh
 
 helm-render: helm-repo-init
 	@HELM_RELEASE="$(HELM_RELEASE)" \
@@ -97,7 +97,7 @@ helm-render: helm-repo-init
 	HELM_SET_ARGS="$(HELM_SET_ARGS)" \
 	HELM_EXTRA_ARGS="$(HELM_EXTRA_ARGS)" \
 	HELM_RENDER_OUTPUT_PATH="$(HELM_RENDER_OUTPUT_PATH)" \
-	bash ./scripts/helm-render.sh
+	bash ./.scripts/helm-render.sh
 
 helm-diff: helm-repo-init
 	@HELM_RELEASE="$(HELM_RELEASE)" \
@@ -108,7 +108,7 @@ helm-diff: helm-repo-init
 	HELM_VALUES_FILES="$(HELM_VALUES_FILES)" \
 	HELM_SET_ARGS="$(HELM_SET_ARGS)" \
 	HELM_EXTRA_ARGS="$(HELM_EXTRA_ARGS)" \
-	bash ./scripts/helm-diff.sh
+	bash ./.scripts/helm-diff.sh
 
 helm-deploy:
 	@HELM_RELEASE=$(HELM_RELEASE) \
@@ -124,7 +124,7 @@ helm-deploy:
 	HELM_IMAGE_NAME_KEY="$(HELM_IMAGE_NAME_KEY)" \
 	HELM_IMAGE_TAG_KEY="$(HELM_IMAGE_TAG_KEY)" \
 	HELM_EXTRA_ARGS="$(HELM_EXTRA_ARGS)" \
-	bash ./scripts/helm-deploy.sh
+	bash ./.scripts/helm-deploy.sh
 
 helm-upgrade: helm-repo-init helm-deploy
 
@@ -154,13 +154,13 @@ helm-version:
 	DOCTL_ACCESS_TOKEN="$(DOCTL_ACCESS_TOKEN)" \
 	DO_CLUSTER_NAME="$(DO_CLUSTER_NAME)" \
 	MAKE_BIN="$(MAKE)" \
-	bash ./scripts/helm-version.sh
+	bash ./.scripts/helm-version.sh
 
 k8s-deploy-preflight:
-	@HELM_NAMESPACE=$(HELM_NAMESPACE) bash ./scripts/helm-preflight.sh
+	@HELM_NAMESPACE=$(HELM_NAMESPACE) bash ./.scripts/helm-preflight.sh
 
 helm-preflight:
-	@HELM_NAMESPACE=$(HELM_NAMESPACE) bash ./scripts/helm-preflight.sh
+	@HELM_NAMESPACE=$(HELM_NAMESPACE) bash ./.scripts/helm-preflight.sh
 
 helm-deploy-preflight:
 	@$(MAKE) helm-preflight HELM_NAMESPACE=$(HELM_NAMESPACE)

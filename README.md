@@ -35,6 +35,8 @@ Agent images:
 | Ruby | [ruby](ruby/README.md) | [build-jenkins-ruby](https://hub.docker.com/r/derekpedersen/build-jenkins-ruby) |
 | Kubernetes tooling | [k8s-tooling](k8s-tooling/README.md) | [build-jenkins-k8s-tooling](https://hub.docker.com/r/derekpedersen/build-jenkins-k8s-tooling) |
 | Playwright | [playwright](playwright/README.md) | [build-jenkins-playwright](https://hub.docker.com/r/derekpedersen/build-jenkins-playwright) |
+| Terraform / OpenTofu | [terraform](terraform/README.md) | [build-jenkins-terraform](https://hub.docker.com/r/derekpedersen/build-jenkins-terraform) |
+| AWS | [aws](aws/README.md) | [build-jenkins-aws](https://hub.docker.com/r/derekpedersen/build-jenkins-aws) |
 
 Images are published to Docker Hub with `latest` and Git commit SHA tags.
 
@@ -102,14 +104,14 @@ kubectl -n jenkins get secret jenkins -o jsonpath='{.data.jenkins-admin-password
 
 This repository includes reusable scripts for Kubernetes deploy validation and Helm deployment:
 
-- Script: [scripts/helm-preflight.sh](scripts/helm-preflight.sh)
-- Script: [scripts/helm-validate.sh](scripts/helm-validate.sh)
-- Script: [scripts/helm-render.sh](scripts/helm-render.sh)
-- Script: [scripts/helm-diff.sh](scripts/helm-diff.sh)
-- Script: [scripts/helm-deploy.sh](scripts/helm-deploy.sh)
-- Script: [scripts/helm-version.sh](scripts/helm-version.sh)
-- Script: [scripts/docker-build.sh](scripts/docker-build.sh)
-- Script: [scripts/docker-push.sh](scripts/docker-push.sh)
+- Script: [.scripts/helm-preflight.sh](.scripts/helm-preflight.sh)
+- Script: [.scripts/helm-validate.sh](.scripts/helm-validate.sh)
+- Script: [.scripts/helm-render.sh](.scripts/helm-render.sh)
+- Script: [.scripts/helm-diff.sh](.scripts/helm-diff.sh)
+- Script: [.scripts/helm-deploy.sh](.scripts/helm-deploy.sh)
+- Script: [.scripts/helm-version.sh](.scripts/helm-version.sh)
+- Script: [.scripts/docker-build.sh](.scripts/docker-build.sh)
+- Script: [.scripts/docker-push.sh](.scripts/docker-push.sh)
 - Make target (generic): `make k8s-deploy-preflight`
 - Make target: `make helm-preflight`
 - Make target (render validation): `make helm-validate`
