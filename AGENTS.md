@@ -6,7 +6,7 @@ If there is any conflict between this file, the README, or editor-specific guida
 
 ## Repository purpose
 
-This repository builds and publishes Jenkins agent Docker images for Kubernetes-based CI workloads. The base image is created from the root Dockerfile and is reused by language-specific agent images such as dotnetcore, golang, node, python, rust, java, php, ruby, and others.
+This repository builds and publishes Jenkins agent Docker images for Kubernetes-based CI workloads. The base image is created from the root Dockerfile and is reused by language-specific agent images such as dotnetcore, golang, node, python, rust, java, php, ruby, terraform, aws, and others.
 
 ## Workspace constraints
 
@@ -16,6 +16,7 @@ This workspace runs in an `s-1vcpu-2gb` container. Keep changes and validation f
 
 - Preserve the repository's existing pattern for agent folders.
 - Each agent folder should contain a Dockerfile and a Makefile.
+- Shared shell helpers live under `.scripts/`; keep helper scripts there instead of a top-level `scripts/` directory.
 - Every agent Dockerfile should start with `FROM build-jenkins-base` unless there is a clear reason not to.
 - Keep image names consistent with the repo naming scheme: `derekpedersen/build-jenkins-<language>`.
 - Use the same project prefix in Jenkins labels: `build-jenkins-<language>`.
@@ -32,8 +33,11 @@ This workspace runs in an `s-1vcpu-2gb` container. Keep changes and validation f
 - Update the root `AGENT_DIRS` list in the root `Makefile` whenever a new agent folder is added.
 - Keep the build order aligned with the existing folders.
 - Treat `AGENT_DIRS` in the root `Makefile` as the build source of truth.
+- Keep root helper scripts under `.scripts/` and update any `bash ./scripts/...` call sites to `.scripts/...` when refactoring or adding scripts.
 - Keep Docker Hub image names, the README image list, and Jenkins pipeline stages aligned with the actual agent folders.
 - Keep `values.yaml` aligned with any deployment changes that affect image names or pod templates.
+- Use the repo-level `make verify` target before finishing changes that affect agent registration or image wiring.
+- Use `make scan-agents` after building images when you need a quick vulnerability review across the catalog.
 
 ## When adding or changing an agent
 
@@ -51,10 +55,10 @@ Run at least:
 ```bash
 grep -n 'AGENT_DIRS' Makefile
 ls -1
-make -n build-agents
+make verify
 ```
 
-If a change affects a published image name or build behavior, also verify the affected Dockerfile and Makefile still match the existing repo conventions.
+When a change affects published image names or security posture, also verify the affected Dockerfile and Makefile still match the repo conventions and run `make -n scan-agents` if a full scan is not needed yet.
 
 ## Definition of done
 

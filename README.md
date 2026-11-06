@@ -40,6 +40,26 @@ Agent images:
 
 Images are published to Docker Hub with `latest` and Git commit SHA tags.
 
+## Repo validation
+
+Use the repo validation target before publishing or expanding the agent catalog:
+
+```bash
+make verify
+```
+
+This checks the `AGENT_DIRS` registry, confirms the project root layout, and runs a dry-run of the agent build graph without doing a full Docker build.
+
+## Security validation
+
+Run the image scan target after the relevant agent images have been built to review the current vulnerability posture across the catalog:
+
+```bash
+make scan-agents
+```
+
+This loops through each registered agent, invokes its per-image scan target, and archives the JSON and text reports under `.trivy/reports/`.
+
 ## Image vulnerability reports
 
 Trivy scan and summary scripts are in `.trivy/`:

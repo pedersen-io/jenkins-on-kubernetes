@@ -5,13 +5,14 @@ This repository’s canonical guidance for external AI agents lives in the root 
 This file is supplemental and should stay aligned with `AGENTS.md`.
 
 ## Project purpose
-This repository builds and publishes Jenkins agent Docker images for Kubernetes-based CI workloads. The base image is created from the root Dockerfile and is used by language-specific agent images such as dotnetcore, golang, node, and python.
+This repository builds and publishes Jenkins agent Docker images for Kubernetes-based CI workloads. The base image is created from the root Dockerfile and is used by language-specific agent images such as dotnetcore, golang, node, python, rust, java, php, ruby, terraform, aws, and others.
 
 ## Workspace constraints
 This workspace runs in an `s-1vcpu-2gb` container. Keep validation narrow and avoid expensive parallel work unless it is needed.
 
 ## Repo conventions
 - Keep each agent folder consistent with the repo pattern: `Dockerfile` + `Makefile`.
+- Shared shell helpers live in `.scripts/`; do not add a top-level `scripts/` directory if the repo is already using the hidden convention.
 - Start language-specific agent Dockerfiles from `FROM build-jenkins-base` unless there is a specific reason not to.
 - Keep image names consistent with `derekpedersen/build-jenkins-<language>`.
 - Match the same project prefix in Jenkins labels: `build-jenkins-<language>`.
@@ -24,7 +25,11 @@ This workspace runs in an `s-1vcpu-2gb` container. Keep validation narrow and av
 ## Root build workflow
 - Update the root `AGENT_DIRS` list in `Makefile` whenever a new agent folder is added.
 - Keep the build order aligned with the existing folders.
+- Treat `AGENT_DIRS` as the source of truth for the repo-wide agent build graph.
+- Keep helper scripts under `.scripts/` and update script invocation paths when adding or moving tooling.
 - The repo uses `docker build` and `docker push` patterns for both base and agent images.
+- Use `make verify` before finishing repo changes that affect agent registration or build ordering.
+- Use `make scan-agents` after building images when a quick vulnerability review is needed.
 
 ## Files to inspect before making changes
 - `AGENTS.md` for the canonical external-agent rules
@@ -43,4 +48,5 @@ This workspace runs in an `s-1vcpu-2gb` container. Keep validation narrow and av
 ```bash
 grep -n 'AGENT_DIRS' Makefile
 ls -1
+make verify
 ```

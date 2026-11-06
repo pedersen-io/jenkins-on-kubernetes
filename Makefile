@@ -12,7 +12,7 @@ HELM_REPO_NAME ?= jenkins
 HELM_REPO_URL ?= https://charts.jenkins.io
 HELM_APP_VERSION_KEY ?= appVersion
 
-.PHONY: build publish-docker build-agents publish-agents build-publish-all scan-image trivy-summary docker-build docker-push docker-build-push helm-repo-init helm-preflight helm-validate helm-render helm-diff helm-deploy helm-upgrade helm-upgrade-init helm-version k8s-deploy-preflight helm-deploy-preflight helm-upgrade-ci
+.PHONY: build publish-docker build-agents publish-agents build-publish-all scan-image trivy-summary docker-build docker-push docker-build-push helm-repo-init helm-preflight helm-validate helm-render helm-diff helm-deploy helm-upgrade helm-upgrade-init helm-version k8s-deploy-preflight helm-deploy-preflight helm-upgrade-ci check-agents verify scan-agents
 
 build:
 	docker build ./ \
@@ -28,6 +28,22 @@ build-agents: build
 	@for dir in $(AGENT_DIRS); do \
 		$(MAKE) -C $$dir build GIT_COMMIT_SHA=$(GIT_COMMIT_SHA) || exit 1; \
 	done
+
+check-agents:
+	@echo "== AGENT_DIRS =="
+	@grep -n 'AGENT_DIRS' Makefile
+	@echo "== Repo root =="
+	@ls -1
+	@echo "== Build graph dry run =="
+	@$(MAKE) -n build-agents
+
+scan-agents:
+	@for dir in $(AGENT_DIRS); do \
+		IMAGE_NAME="derekpedersen/build-jenkins-$$dir"; \
+		$(MAKE) -C $$dir scan-image IMAGE_NAME="$$IMAGE_NAME" || exit 1; \
+	done
+
+verify: check-agents
 
 publish-agents: publish-docker build-agents
 	@for dir in $(AGENT_DIRS); do \
