@@ -37,7 +37,6 @@ Agent images:
 | Infrastructure | [infra](infra/README.md) | [build-jenkins-infra](https://hub.docker.com/r/derekpedersen/build-jenkins-infra) |
 | Playwright | [playwright](playwright/README.md) | [build-jenkins-playwright](https://hub.docker.com/r/derekpedersen/build-jenkins-playwright) |
 | Terraform / OpenTofu | [terraform](terraform/README.md) | [build-jenkins-terraform](https://hub.docker.com/r/derekpedersen/build-jenkins-terraform) |
-| AWS | [aws](aws/README.md) | [build-jenkins-aws](https://hub.docker.com/r/derekpedersen/build-jenkins-aws) |
 
 Images are published to Docker Hub with `latest` and Git commit SHA tags.
 
