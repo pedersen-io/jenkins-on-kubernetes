@@ -10,6 +10,8 @@ This repository packages a self-hosted Jenkins environment for Kubernetes. It pr
 
 The setup is intended for evaluating CI/CD architecture and operational patterns. It favors reproducible Docker builds and Kubernetes-native agents while keeping deployment separate from image publishing.
 
+This workspace is currently operating inside an `s-1vcpu-2gb` container, so local development and validation should stay focused and lightweight.
+
 ## Images
 
 Docker Hub profile: [derekpedersen](https://hub.docker.com/u/derekpedersen)
@@ -32,9 +34,31 @@ Agent images:
 | PHP | [php](php/README.md) | [build-jenkins-php](https://hub.docker.com/r/derekpedersen/build-jenkins-php) |
 | Ruby | [ruby](ruby/README.md) | [build-jenkins-ruby](https://hub.docker.com/r/derekpedersen/build-jenkins-ruby) |
 | Kubernetes tooling | [k8s-tooling](k8s-tooling/README.md) | [build-jenkins-k8s-tooling](https://hub.docker.com/r/derekpedersen/build-jenkins-k8s-tooling) |
+| Infrastructure | [infra](infra/README.md) | [build-jenkins-infra](https://hub.docker.com/r/derekpedersen/build-jenkins-infra) |
 | Playwright | [playwright](playwright/README.md) | [build-jenkins-playwright](https://hub.docker.com/r/derekpedersen/build-jenkins-playwright) |
+| Terraform / OpenTofu | [terraform](terraform/README.md) | [build-jenkins-terraform](https://hub.docker.com/r/derekpedersen/build-jenkins-terraform) |
 
 Images are published to Docker Hub with `latest` and Git commit SHA tags.
+
+## Repo validation
+
+Use the repo validation target before publishing or expanding the agent catalog:
+
+```bash
+make verify
+```
+
+This checks the `AGENT_DIRS` registry, confirms the project root layout, and runs a dry-run of the agent build graph without doing a full Docker build.
+
+## Security validation
+
+Run the image scan target after the relevant agent images have been built to review the current vulnerability posture across the catalog:
+
+```bash
+make scan-agents
+```
+
+This loops through each registered agent, invokes its per-image scan target, and archives the JSON and text reports under `.trivy/reports/`.
 
 ## Image vulnerability reports
 
@@ -100,14 +124,14 @@ kubectl -n jenkins get secret jenkins -o jsonpath='{.data.jenkins-admin-password
 
 This repository includes reusable scripts for Kubernetes deploy validation and Helm deployment:
 
-- Script: [scripts/helm-preflight.sh](scripts/helm-preflight.sh)
-- Script: [scripts/helm-validate.sh](scripts/helm-validate.sh)
-- Script: [scripts/helm-render.sh](scripts/helm-render.sh)
-- Script: [scripts/helm-diff.sh](scripts/helm-diff.sh)
-- Script: [scripts/helm-deploy.sh](scripts/helm-deploy.sh)
-- Script: [scripts/helm-version.sh](scripts/helm-version.sh)
-- Script: [scripts/docker-build.sh](scripts/docker-build.sh)
-- Script: [scripts/docker-push.sh](scripts/docker-push.sh)
+- Script: [.scripts/helm-preflight.sh](.scripts/helm-preflight.sh)
+- Script: [.scripts/helm-validate.sh](.scripts/helm-validate.sh)
+- Script: [.scripts/helm-render.sh](.scripts/helm-render.sh)
+- Script: [.scripts/helm-diff.sh](.scripts/helm-diff.sh)
+- Script: [.scripts/helm-deploy.sh](.scripts/helm-deploy.sh)
+- Script: [.scripts/helm-version.sh](.scripts/helm-version.sh)
+- Script: [.scripts/docker-build.sh](.scripts/docker-build.sh)
+- Script: [.scripts/docker-push.sh](.scripts/docker-push.sh)
 - Make target (generic): `make k8s-deploy-preflight`
 - Make target: `make helm-preflight`
 - Make target (render validation): `make helm-validate`
