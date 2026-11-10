@@ -174,7 +174,7 @@ Optional Docker build/push variables:
 Keep Jenkinsfiles minimal and call Make targets or checked-in scripts.
 
 - `Jenkinsfile`: CI image build and scan workflow.
-- `Jenkinsfile.deploy`: guarded deploy workflow for `make helm-upgrade-ci`.
+- `Jenkinsfile.deploy`: guarded build, publish, and deploy workflow.
 
 ```groovy
 // Jenkinsfile.deploy example
@@ -219,7 +219,30 @@ pipeline {
       }
     }
 
-    stage('Deploy preflight + helm upgrade') {
+    stage('Build') {
+      when { expression { env.DEPLOY_ALLOWED == 'true' } }
+      steps {
+        dir("${env.PROJECT_DIR}") {
+          sh 'make build-agents'
+        }
+      }
+    }
+
+    stage('Publish') {
+      when { expression { env.DEPLOY_ALLOWED == 'true' } }
+      steps {
+        script {
+          def dockerhubCredentialsId = env.DOCKERHUB_CREDENTIALS_ID ?: 'docker-pat'
+          withDockerRegistry([credentialsId: dockerhubCredentialsId, url: 'https://index.docker.io/v1/']) {
+            dir("${env.PROJECT_DIR}") {
+              sh 'make publish-agents'
+            }
+          }
+        }
+      }
+    }
+
+    stage('Deploy') {
       when { expression { env.DEPLOY_ALLOWED == 'true' } }
       steps {
         withCredentials([

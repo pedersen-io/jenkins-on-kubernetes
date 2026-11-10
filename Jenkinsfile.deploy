@@ -53,7 +53,35 @@ pipeline {
             }
         }
 
-        stage('Helm deploy') {
+        stage('Build') {
+            when {
+                expression { env.DEPLOY_ALLOWED == 'true' }
+            }
+            steps {
+                dir("${env.PROJECT_DIR}") {
+                    sh 'make build-agents'
+                }
+            }
+        }
+
+        stage('Publish') {
+            when {
+                expression { env.DEPLOY_ALLOWED == 'true' }
+            }
+            steps {
+                script {
+                    def dockerhubCredentialsId = env.DOCKERHUB_CREDENTIALS_ID ?: 'docker-pat'
+
+                    withDockerRegistry([credentialsId: dockerhubCredentialsId, url: 'https://index.docker.io/v1/']) {
+                        dir("${env.PROJECT_DIR}") {
+                            sh 'make publish-agents'
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Deploy') {
             when {
                 expression { env.DEPLOY_ALLOWED == 'true' }
             }
