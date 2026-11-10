@@ -10,6 +10,8 @@ This repository packages a self-hosted Jenkins environment for Kubernetes. It pr
 
 The setup is intended for evaluating CI/CD architecture and operational patterns. It favors reproducible Docker builds and Kubernetes-native agents while keeping deployment separate from image publishing.
 
+This workspace is currently operating inside an `s-1vcpu-2gb` container, so local development and validation should stay focused and lightweight.
+
 ## Images
 
 Docker Hub profile: [derekpedersen](https://hub.docker.com/u/derekpedersen)

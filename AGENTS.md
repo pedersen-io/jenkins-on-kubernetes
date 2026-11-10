@@ -8,6 +8,10 @@ If there is any conflict between this file, the README, or editor-specific guida
 
 This repository builds and publishes Jenkins agent Docker images for Kubernetes-based CI workloads. The base image is created from the root Dockerfile and is reused by language-specific agent images such as dotnetcore, golang, node, python, rust, java, php, ruby, and others.
 
+## Workspace constraints
+
+This workspace runs in an `s-1vcpu-2gb` container. Keep changes and validation focused, prefer narrow searches and single-target checks, and avoid expensive parallel work unless it is necessary.
+
 ## Required conventions
 
 - Preserve the repository's existing pattern for agent folders.
