@@ -25,6 +25,7 @@ Agent images:
 | Agent | README | Docker Hub image |
 | --- | --- | --- |
 | .NET | [dotnetcore](dotnetcore/README.md) | [build-jenkins-dotnetcore](https://hub.docker.com/r/derekpedersen/build-jenkins-dotnetcore) |
+| .NET Preview | [dotnetcore/preview](dotnetcore/preview/README.md) | [build-jenkins-dotnetcore-preview](https://hub.docker.com/r/derekpedersen/build-jenkins-dotnetcore-preview) |
 | Go | [golang](golang/README.md) | [build-jenkins-golang](https://hub.docker.com/r/derekpedersen/build-jenkins-golang) |
 | Node.js | [node](node/README.md) | [build-jenkins-node](https://hub.docker.com/r/derekpedersen/build-jenkins-node) |
 | Python | [python](python/README.md) | [build-jenkins-python](https://hub.docker.com/r/derekpedersen/build-jenkins-python) |
@@ -35,6 +36,7 @@ Agent images:
 | Ruby | [ruby](ruby/README.md) | [build-jenkins-ruby](https://hub.docker.com/r/derekpedersen/build-jenkins-ruby) |
 | Kubernetes tooling | [k8s-tooling](k8s-tooling/README.md) | [build-jenkins-k8s-tooling](https://hub.docker.com/r/derekpedersen/build-jenkins-k8s-tooling) |
 | Playwright | [playwright](playwright/README.md) | [build-jenkins-playwright](https://hub.docker.com/r/derekpedersen/build-jenkins-playwright) |
+| Terraform | [terraform](terraform/README.md) | [build-jenkins-terraform](https://hub.docker.com/r/derekpedersen/build-jenkins-terraform) |
 
 Images are published to Docker Hub with `latest` and Git commit SHA tags.
 
@@ -168,30 +170,89 @@ Optional Docker build/push variables:
 - `DOCKER_CONTEXT` (default `.`)
 - `DOCKER_BUILD_ARGS` (raw docker build args)
 
-### Jenkinsfile snippet
+### Jenkinsfile snippets
 
 Keep Jenkinsfiles minimal and call Make targets or checked-in scripts.
 
+- `Jenkinsfile`: CI image build and scan workflow.
+- `Jenkinsfile.deploy`: guarded build, publish, and deploy workflow.
+
 ```groovy
+// Jenkinsfile.deploy example
 pipeline {
   agent {
     label 'build-jenkins-base'
   }
 
+  options {
+    skipDefaultCheckout true
+    timeout(time: 45, unit: 'MINUTES')
+  }
+
+  environment {
+    PROJECT_DIR = '.'
+    DEPLOY_ALLOWED = 'false'
+  }
+
   stages {
-    stage('Checkout') {
+    stage('Guard: allow manual deploys or tag-triggered deploys') {
       steps {
-        checkout scm
+        script {
+          def isManual = !currentBuild.getBuildCauses('hudson.model.Cause$UserIdCause').isEmpty()
+          def isTagBuild = env.TAG_NAME?.trim()
+
+          if (isTagBuild || isManual) {
+            env.DEPLOY_ALLOWED = 'true'
+            return
+          }
+
+          currentBuild.description = 'Deploy skipped: run manually or from a tag build.'
+        }
       }
     }
 
-    stage('Deploy preflight + helm upgrade') {
+    stage('Checkout') {
+      when { expression { env.DEPLOY_ALLOWED == 'true' } }
+      steps {
+        dir("${env.PROJECT_DIR}") {
+          checkout scm
+        }
+      }
+    }
+
+    stage('Build') {
+      when { expression { env.DEPLOY_ALLOWED == 'true' } }
+      steps {
+        dir("${env.PROJECT_DIR}") {
+          sh 'make build-agents'
+        }
+      }
+    }
+
+    stage('Publish') {
+      when { expression { env.DEPLOY_ALLOWED == 'true' } }
+      steps {
+        script {
+          def dockerhubCredentialsId = env.DOCKERHUB_CREDENTIALS_ID ?: 'docker-pat'
+          withDockerRegistry([credentialsId: dockerhubCredentialsId, url: 'https://index.docker.io/v1/']) {
+            dir("${env.PROJECT_DIR}") {
+              sh 'make publish-agents'
+            }
+          }
+        }
+      }
+    }
+
+    stage('Deploy') {
+      when { expression { env.DEPLOY_ALLOWED == 'true' } }
       steps {
         withCredentials([
           string(credentialsId: 'digital-ocean-pat', variable: 'DIGITALOCEAN_ACCESS_TOKEN'),
           string(credentialsId: 'digital-ocean-k8s-cluster', variable: 'DIGITALOCEAN_K8S_CLUSTER')
         ]) {
-          sh 'make helm-upgrade-ci'
+          dir("${env.PROJECT_DIR}") {
+            sh 'make helm-upgrade-ci'
+          }
         }
       }
     }
