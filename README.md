@@ -35,6 +35,7 @@ Agent images:
 | Ruby | [ruby](ruby/README.md) | [build-jenkins-ruby](https://hub.docker.com/r/derekpedersen/build-jenkins-ruby) |
 | Kubernetes tooling | [k8s-tooling](k8s-tooling/README.md) | [build-jenkins-k8s-tooling](https://hub.docker.com/r/derekpedersen/build-jenkins-k8s-tooling) |
 | Playwright | [playwright](playwright/README.md) | [build-jenkins-playwright](https://hub.docker.com/r/derekpedersen/build-jenkins-playwright) |
+| Terraform | [terraform](terraform/README.md) | [build-jenkins-terraform](https://hub.docker.com/r/derekpedersen/build-jenkins-terraform) |
 
 Images are published to Docker Hub with `latest` and Git commit SHA tags.
 
@@ -168,30 +169,66 @@ Optional Docker build/push variables:
 - `DOCKER_CONTEXT` (default `.`)
 - `DOCKER_BUILD_ARGS` (raw docker build args)
 
-### Jenkinsfile snippet
+### Jenkinsfile snippets
 
 Keep Jenkinsfiles minimal and call Make targets or checked-in scripts.
 
+- `Jenkinsfile`: CI image build and scan workflow.
+- `Jenkinsfile.deploy`: guarded deploy workflow for `make helm-upgrade-ci`.
+
 ```groovy
+// Jenkinsfile.deploy example
 pipeline {
   agent {
     label 'build-jenkins-base'
   }
 
+  options {
+    skipDefaultCheckout true
+    timeout(time: 45, unit: 'MINUTES')
+  }
+
+  environment {
+    PROJECT_DIR = '.'
+    DEPLOY_ALLOWED = 'false'
+  }
+
   stages {
-    stage('Checkout') {
+    stage('Guard: allow manual deploys or tag-triggered deploys') {
       steps {
-        checkout scm
+        script {
+          def isManual = !currentBuild.getBuildCauses('hudson.model.Cause$UserIdCause').isEmpty()
+          def isTagBuild = env.TAG_NAME?.trim()
+
+          if (isTagBuild || isManual) {
+            env.DEPLOY_ALLOWED = 'true'
+            return
+          }
+
+          currentBuild.description = 'Deploy skipped: run manually or from a tag build.'
+        }
+      }
+    }
+
+    stage('Checkout') {
+      when { expression { env.DEPLOY_ALLOWED == 'true' } }
+      steps {
+        dir("${env.PROJECT_DIR}") {
+          checkout scm
+        }
       }
     }
 
     stage('Deploy preflight + helm upgrade') {
+      when { expression { env.DEPLOY_ALLOWED == 'true' } }
       steps {
         withCredentials([
           string(credentialsId: 'digital-ocean-pat', variable: 'DIGITALOCEAN_ACCESS_TOKEN'),
           string(credentialsId: 'digital-ocean-k8s-cluster', variable: 'DIGITALOCEAN_K8S_CLUSTER')
         ]) {
-          sh 'make helm-upgrade-ci'
+          dir("${env.PROJECT_DIR}") {
+            sh 'make helm-upgrade-ci'
+          }
         }
       }
     }

@@ -556,3 +556,47 @@ controller:
                 podRetention: "onFailure"
                 slaveConnectTimeout: 600
                 yamlMergeStrategy: "override"
+
+              - containers:
+                - alwaysPullImage: true
+                  args: "^${computer.jnlpmac} ^${computer.name}"
+                  image: "derekpedersen/build-jenkins-terraform:latest"
+                  livenessProbe:
+                    failureThreshold: 0
+                    initialDelaySeconds: 0
+                    periodSeconds: 0
+                    successThreshold: 0
+                    timeoutSeconds: 0
+                  name: "jnlp"
+                  resourceLimitCpu: ".4"
+                  resourceLimitMemory: "768Mi"
+                  resourceRequestCpu: ".2"
+                  resourceRequestMemory: "256Mi"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins"
+                  envVars:
+                  - envVar:
+                      key: "DOCKER_HOST"
+                      value: "tcp://127.0.0.1:2375"
+                - alwaysPullImage: true
+                  envVars:
+                  - envVar:
+                      key: "DOCKER_TLS_CERTDIR"
+                      value: ""
+                  image: "docker:29-dind"
+                  name: "docker"
+                  privileged: true
+                  resourceLimitCpu: ".5"
+                  resourceLimitMemory: "768Mi"
+                  resourceRequestCpu: ".178"
+                  resourceRequestMemory: "256Mi"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins"
+                id: "6fcb81d2-95d5-4d6d-bb5f-2bc2e9896281"
+                idleMinutes: 15
+                instanceCap: 1
+                label: "build-jenkins-terraform || build-terraform || build-terraform-stable"
+                name: "terraform"
+                podRetention: "onFailure"
+                slaveConnectTimeout: 600
+                yamlMergeStrategy: "override"
