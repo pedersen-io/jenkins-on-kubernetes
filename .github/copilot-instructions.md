@@ -7,6 +7,9 @@ This file is supplemental and should stay aligned with `AGENTS.md`.
 ## Project purpose
 This repository builds and publishes Jenkins agent Docker images for Kubernetes-based CI workloads. The base image is created from the root Dockerfile and is used by language-specific agent images such as dotnetcore, golang, node, and python.
 
+## Workspace constraints
+This workspace runs in an `s-1vcpu-2gb` container. Keep validation narrow and avoid expensive parallel work unless it is needed.
+
 ## Repo conventions
 - Keep each agent folder consistent with the repo pattern: `Dockerfile` + `Makefile`.
 - Start language-specific agent Dockerfiles from `FROM build-jenkins-base` unless there is a specific reason not to.
