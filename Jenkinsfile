@@ -62,6 +62,14 @@ pipeline {
                 }
             }
         }
+        stage('dotnetcore-preview') {
+            steps {
+                dir("${env.PROJECT_DIR}/dotnetcore/preview") {
+                    sh 'make build'
+                    scanImage('derekpedersen/build-jenkins-dotnetcore-preview')
+                }
+            }
+        }
         stage('python') {
             steps {
                 dir("${env.PROJECT_DIR}/python") {

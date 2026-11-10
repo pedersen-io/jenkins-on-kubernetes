@@ -25,6 +25,7 @@ Agent images:
 | Agent | README | Docker Hub image |
 | --- | --- | --- |
 | .NET | [dotnetcore](dotnetcore/README.md) | [build-jenkins-dotnetcore](https://hub.docker.com/r/derekpedersen/build-jenkins-dotnetcore) |
+| .NET Preview | [dotnetcore/preview](dotnetcore/preview/README.md) | [build-jenkins-dotnetcore-preview](https://hub.docker.com/r/derekpedersen/build-jenkins-dotnetcore-preview) |
 | Go | [golang](golang/README.md) | [build-jenkins-golang](https://hub.docker.com/r/derekpedersen/build-jenkins-golang) |
 | Node.js | [node](node/README.md) | [build-jenkins-node](https://hub.docker.com/r/derekpedersen/build-jenkins-node) |
 | Python | [python](python/README.md) | [build-jenkins-python](https://hub.docker.com/r/derekpedersen/build-jenkins-python) |

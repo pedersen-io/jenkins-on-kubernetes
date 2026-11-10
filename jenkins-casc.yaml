@@ -208,6 +208,50 @@ controller:
               - containers:
                 - alwaysPullImage: true
                   args: "^${computer.jnlpmac} ^${computer.name}"
+                  image: "derekpedersen/build-jenkins-dotnetcore-preview:latest"
+                  livenessProbe:
+                    failureThreshold: 0
+                    initialDelaySeconds: 0
+                    periodSeconds: 0
+                    successThreshold: 0
+                    timeoutSeconds: 0
+                  name: "jnlp"
+                  resourceLimitCpu: ".4"
+                  resourceLimitMemory: "768Mi"
+                  resourceRequestCpu: ".2"
+                  resourceRequestMemory: "256Mi"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins"
+                  envVars:
+                  - envVar:
+                      key: "DOCKER_HOST"
+                      value: "tcp://127.0.0.1:2375"
+                - alwaysPullImage: true
+                  envVars:
+                  - envVar:
+                      key: "DOCKER_TLS_CERTDIR"
+                      value: ""
+                  image: "docker:29-dind"
+                  name: "docker"
+                  privileged: true
+                  resourceLimitCpu: ".5"
+                  resourceLimitMemory: "768Mi"
+                  resourceRequestCpu: ".178"
+                  resourceRequestMemory: "256Mi"
+                  ttyEnabled: true
+                  workingDir: "/home/jenkins"
+                id: "b4d2eb36-341c-4fdf-bf40-b5a5f17d2d4d"
+                idleMinutes: 15
+                instanceCap: 1
+                label: "build-jenkins-dotnetcore-preview || build-dotnetcore-preview"
+                name: "dotnetcore-preview"
+                podRetention: "onFailure"
+                slaveConnectTimeout: 600
+                yamlMergeStrategy: "override"
+
+              - containers:
+                - alwaysPullImage: true
+                  args: "^${computer.jnlpmac} ^${computer.name}"
                   image: "derekpedersen/build-jenkins-python:latest"
                   livenessProbe:
                     failureThreshold: 0
