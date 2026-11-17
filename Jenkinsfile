@@ -1,11 +1,32 @@
 def scanImage(String imageName) {
     sh "make scan-image IMAGE_NAME='${imageName}'"
     archiveArtifacts artifacts: '.trivy/reports/*.json, .trivy/reports/*.txt', fingerprint: true, allowEmptyArchive: true
+
+    sh """
+        set -eu
+        mkdir -p .trivy/sbom .trivy/digests
+        IMAGE_NAME='${imageName}'
+        SAFE_NAME="\${IMAGE_NAME//\//-}"
+        trivy image --format cyclonedx --output ".trivy/sbom/\${SAFE_NAME}.cdx.json" "\${IMAGE_NAME}:latest" || true
+        docker image inspect --format='{{index .RepoDigests 0}}' "\${IMAGE_NAME}:latest" > ".trivy/digests/\${SAFE_NAME}.digest.txt" || true
+    """
+    archiveArtifacts artifacts: '.trivy/sbom/*.cdx.json, .trivy/digests/*.digest.txt', fingerprint: true, allowEmptyArchive: true
 }
 
 def generateTrivySummary() {
     sh 'make trivy-summary'
     archiveArtifacts artifacts: '.trivy/summary/*.html, .trivy/summary/*.md', fingerprint: true, allowEmptyArchive: true
+}
+
+def aggregateSecurityArtifacts() {
+    sh '''
+        set -eu
+        mkdir -p .trivy/aggregate/sbom .trivy/aggregate/digests
+
+        find . -type f -path '*/.trivy/sbom/*.cdx.json' -exec cp {} .trivy/aggregate/sbom/ \; || true
+        find . -type f -path '*/.trivy/digests/*.digest.txt' -exec cp {} .trivy/aggregate/digests/ \; || true
+    '''
+    archiveArtifacts artifacts: '.trivy/aggregate/sbom/*.cdx.json, .trivy/aggregate/digests/*.digest.txt', fingerprint: true, allowEmptyArchive: true
 }
 
 pipeline {
@@ -17,7 +38,7 @@ pipeline {
     }
     options {
         skipDefaultCheckout true
-        timeout(time: 60, unit: 'MINUTES')
+        timeout(time: 180, unit: 'MINUTES')
     }
     environment {
         PROJECT_DIR = '.'
@@ -145,6 +166,7 @@ pipeline {
         stage('Trivy summary') {
             steps {
                 dir("${env.PROJECT_DIR}") {
+                    aggregateSecurityArtifacts()
                     generateTrivySummary()
                 }
             }
