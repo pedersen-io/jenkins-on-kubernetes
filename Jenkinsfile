@@ -6,7 +6,7 @@ def scanImage(String imageName) {
         set -eu
         mkdir -p .trivy/sbom .trivy/digests
         IMAGE_NAME='${imageName}'
-        SAFE_NAME="\${IMAGE_NAME//\//-}"
+        SAFE_NAME="$(printf '%s' "$IMAGE_NAME" | tr '/' '-')"
         trivy image --format cyclonedx --output ".trivy/sbom/\${SAFE_NAME}.cdx.json" "\${IMAGE_NAME}:latest" || true
         docker image inspect --format='{{index .RepoDigests 0}}' "\${IMAGE_NAME}:latest" > ".trivy/digests/\${SAFE_NAME}.digest.txt" || true
     """
