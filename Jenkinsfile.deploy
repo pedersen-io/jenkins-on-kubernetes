@@ -3,33 +3,101 @@ pipeline {
         label 'build-jenkins-base'
     }
 
+    triggers {
+        githubPush()
+    }
+
+    options {
+        skipDefaultCheckout true
+        timeout(time: 45, unit: 'MINUTES')
+    }
+
+    environment {
+        PROJECT_DIR = '.'
+        DEPLOY_ALLOWED = 'false'
+    }
+
     stages {
-        stage('Guard: manual main-branch run only') {
+        stage('Guard: allow manual deploys or tag-triggered deploys') {
             steps {
                 script {
-                    if (currentBuild.getBuildCauses('hudson.model.Cause$UserIdCause').isEmpty()) {
-                        error('Helm deploy must be started manually from the Jenkins UI.')
+                    def isManual = !currentBuild.getBuildCauses('hudson.model.Cause$UserIdCause').isEmpty()
+                    def isTagBuild = env.TAG_NAME?.trim()
+
+                    if (isTagBuild) {
+                        env.DEPLOY_ALLOWED = 'true'
+                        echo "Tag-triggered deploy detected for ${env.TAG_NAME}."
+                        return
                     }
-                    if (env.BRANCH_NAME != 'main') {
-                        error('Helm deploy jobs are restricted to the main branch only.')
+
+                    if (isManual) {
+                        env.DEPLOY_ALLOWED = 'true'
+                        echo "Manual deploy allowed from branch ${env.BRANCH_NAME}."
+                        return
                     }
+
+                    currentBuild.description = 'Deploy skipped: run manually from any branch or use a tag build.'
+                    echo 'Deploy skipped: only manual runs or tag-triggered builds are allowed.'
                 }
             }
         }
 
         stage('Checkout') {
+            when {
+                expression { env.DEPLOY_ALLOWED == 'true' }
+            }
             steps {
-                checkout scm
+                dir("${env.PROJECT_DIR}") {
+                    checkout scm
+                }
             }
         }
 
-        stage('Helm deploy') {
+        stage('Build') {
+            when {
+                expression { env.DEPLOY_ALLOWED == 'true' }
+            }
             steps {
-                withCredentials([
-                    string(credentialsId: 'digital-ocean-pat', variable: 'DIGITALOCEAN_ACCESS_TOKEN'),
-                    string(credentialsId: 'digital-ocean-k8s-cluster', variable: 'DIGITALOCEAN_K8S_CLUSTER')
-                ]) {
-                    sh 'make helm-upgrade-ci'
+                dir("${env.PROJECT_DIR}") {
+                    sh 'make build-agents'
+                }
+            }
+        }
+
+        stage('Publish') {
+            when {
+                expression { env.DEPLOY_ALLOWED == 'true' }
+            }
+            steps {
+                script {
+                    def dockerhubCredentialsId = env.DOCKERHUB_CREDENTIALS_ID ?: 'docker-pat'
+
+                    withDockerRegistry([credentialsId: dockerhubCredentialsId, url: 'https://index.docker.io/v1/']) {
+                        dir("${env.PROJECT_DIR}") {
+                            sh 'make publish-agents'
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Deploy') {
+            when {
+                expression { env.DEPLOY_ALLOWED == 'true' }
+            }
+            steps {
+                script {
+                    def digitalOceanPatCredentialsId = env.DIGITALOCEAN_PAT_CREDENTIALS_ID ?: 'digital-ocean-pat'
+                    def digitalOceanClusterCredentialsId = env.DIGITALOCEAN_CLUSTER_CREDENTIALS_ID ?: 'digital-ocean-k8s-cluster'
+
+                    withCredentials([
+                        string(credentialsId: digitalOceanPatCredentialsId, variable: 'DIGITALOCEAN_ACCESS_TOKEN'),
+                        string(credentialsId: digitalOceanClusterCredentialsId, variable: 'DIGITALOCEAN_K8S_CLUSTER')
+                    ]) {
+                        dir("${env.PROJECT_DIR}") {
+                            sh 'make helm-upgrade-ci'
+                        }
+                    }
                 }
             }
         }

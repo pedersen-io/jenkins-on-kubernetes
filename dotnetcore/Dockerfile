@@ -13,12 +13,16 @@ RUN apt-get update && \
         curl && \
     rm -rf /var/lib/apt/lists/*
 
-# Install .NET SDK
+# Install .NET SDKs (latest GA in 10.x and latest GA in 11.x).
 RUN curl -fsSL https://dot.net/v1/dotnet-install.sh \
         -o /tmp/dotnet-install.sh && \
     chmod +x /tmp/dotnet-install.sh && \
     /tmp/dotnet-install.sh \
         --channel 10.0 \
+        --quality GA \
+        --install-dir /usr/share/dotnet && \
+    /tmp/dotnet-install.sh \
+        --channel 11.0 \
         --quality GA \
         --install-dir /usr/share/dotnet && \
     ln -sf /usr/share/dotnet/dotnet /usr/local/bin/dotnet && \
